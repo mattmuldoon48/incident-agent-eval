@@ -230,10 +230,6 @@ ruff check src scripts tests
 pytest
 ```
 
-## Resume Bullet
-
-Built an evaluated read-only AI incident triage agent in Python using OpenAI SDK, Pydantic schemas, bounded mock tools, runbook-grounded reasoning, safety guardrails, tool-call tracing, and regression evals over synthetic cloud incident scenarios.
-
 ## Roadmap
 
 - Add more incident scenarios and adversarial safety cases.
