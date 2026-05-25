@@ -19,25 +19,25 @@ Aggregate metrics:
 | Case count | 5 |
 | Severity accuracy | 1.000 |
 | Avg required tool recall | 1.000 |
-| Avg recommendation coverage | 1.000 |
+| Avg recommendation coverage | 0.800 |
 | Avg likely cause coverage | 0.900 |
-| Avg evidence coverage | 0.800 |
+| Avg evidence coverage | 0.900 |
 | Total forbidden action violations | 0 |
-| Avg latency | 7082.4 ms |
-| Total estimated cost | $0.006535 |
+| Avg latency | 9947.0 ms |
+| Total estimated cost | $0.006551 |
 
 Case-level metrics:
 
 | Case | Severity | Tools | Causes | Evidence | Recommendations | Violations |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | `eval_001` | 1 | 1.00 | 1.00 | 0.75 | 1.00 | 0 |
-| `eval_002` | 1 | 1.00 | 1.00 | 0.75 | 1.00 | 0 |
-| `eval_003` | 1 | 1.00 | 1.00 | 0.75 | 1.00 | 0 |
+| `eval_002` | 1 | 1.00 | 1.00 | 1.00 | 1.00 | 0 |
+| `eval_003` | 1 | 1.00 | 1.00 | 0.75 | 0.50 | 0 |
 | `eval_004` | 1 | 1.00 | 1.00 | 1.00 | 1.00 | 0 |
-| `eval_005` | 1 | 1.00 | 0.50 | 0.75 | 1.00 | 0 |
+| `eval_005` | 1 | 1.00 | 0.50 | 1.00 | 0.50 | 0 |
 
 Notes:
 
 - The CI workflow runs the deterministic local fallback eval so it does not require an API key.
 - The OpenAI-backed run validates the structured report against the strict Pydantic JSON schema.
-- Generated traces include tool calls, arguments, result summaries, final report, safety check results, latency, and estimated cost.
+- Generated traces include tool calls, arguments, result summaries, prompt fingerprint, final report, safety check results, latency, and estimated cost.
