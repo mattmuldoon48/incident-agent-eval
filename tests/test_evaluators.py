@@ -25,8 +25,11 @@ def _trace(actions: list[str]) -> AgentTrace:
         started_at=now,
         completed_at=now,
         model="gpt-4.1-mini",
+        prompt_version="triage_agent_v1",
+        used_openai=False,
         tool_calls=[],
         final_report=report,
+        safety_check={"safe": True, "violations": []},
         estimated_cost_usd=0,
         latency_ms=10,
     )

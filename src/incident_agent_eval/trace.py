@@ -23,13 +23,12 @@ def model_dump_jsonable(model: BaseModel) -> dict:
     return json.loads(model.model_dump_json())
 
 
-def save_trace(trace: AgentTrace, safety_result: dict) -> Path:
+def save_trace(trace: AgentTrace) -> Path:
     root = get_settings().project_root
     trace_dir = root / "reports/traces"
     trace_dir.mkdir(parents=True, exist_ok=True)
     timestamp = trace.started_at.strftime("%Y%m%dT%H%M%SZ")
     path = trace_dir / f"{trace.incident_id}_{timestamp}.json"
     payload = model_dump_jsonable(trace)
-    payload["safety_check"] = safety_result
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return path

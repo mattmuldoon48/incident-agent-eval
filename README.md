@@ -84,6 +84,7 @@ python scripts/run_eval.py
 ```
 
 This prints a rich summary table and saves an aggregate report under `reports/eval_runs/`.
+It also updates `reports/eval_runs/latest.json` for local inspection. Generated eval reports are intentionally gitignored.
 
 To fail the command when aggregate metrics miss the regression thresholds:
 

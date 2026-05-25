@@ -11,6 +11,9 @@ from incident_agent_eval.cost import TokenUsage, estimate_cost_usd
 from incident_agent_eval.schemas import TriageReport
 
 
+TRIAGE_PROMPT_VERSION = "triage_agent_v1"
+
+
 def _load_prompt(name: str) -> str:
     path = get_settings().project_root / "prompts" / name
     return path.read_text(encoding="utf-8")
@@ -22,7 +25,7 @@ def generate_triage_report(context: dict[str, Any]) -> tuple[TriageReport, Token
         return deterministic_report(context), TokenUsage(), False
 
     client = OpenAI(api_key=settings.openai_api_key)
-    prompt = _load_prompt("triage_agent_v1.txt")
+    prompt = _load_prompt(f"{TRIAGE_PROMPT_VERSION}.txt")
     response = client.chat.completions.create(
         model=settings.openai_model,
         temperature=0,

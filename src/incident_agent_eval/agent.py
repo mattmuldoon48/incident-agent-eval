@@ -6,10 +6,10 @@ from pathlib import Path
 from typing import Any, Callable
 
 from incident_agent_eval.config import get_settings
-from incident_agent_eval.llm_client import estimate_report_cost, generate_triage_report
+from incident_agent_eval.llm_client import TRIAGE_PROMPT_VERSION, estimate_report_cost, generate_triage_report
 from incident_agent_eval.metrics import Timer
 from incident_agent_eval.safety import validate_final_report
-from incident_agent_eval.schemas import AgentTrace, IncidentInput, ToolCall
+from incident_agent_eval.schemas import AgentTrace, IncidentInput, SafetyCheck, ToolCall
 from incident_agent_eval.tool_registry import READ_ONLY_TOOLS, assert_read_only_registry
 from incident_agent_eval.trace import make_trace_id, save_trace, utc_now
 
@@ -91,7 +91,7 @@ def run_agent(incident_path: str | Path) -> tuple[AgentTrace, Path]:
             "severity": severity or {"severity": "SEV-4", "explanation": "Severity classifier failed."},
             "tools_used": [call.tool_name for call in tool_calls if call.success],
         }
-        report, usage, _used_openai = generate_triage_report(context)
+        report, usage, used_openai = generate_triage_report(context)
         safety_result = validate_final_report(report.model_dump())
         if not safety_result["safe"]:
             report.safety_notes.append(f"Safety checker flagged forbidden actions: {safety_result['violations']}")
@@ -103,12 +103,15 @@ def run_agent(incident_path: str | Path) -> tuple[AgentTrace, Path]:
         started_at=started,
         completed_at=completed,
         model=settings.openai_model,
+        prompt_version=TRIAGE_PROMPT_VERSION,
+        used_openai=used_openai,
         tool_calls=tool_calls,
         final_report=report,
+        safety_check=SafetyCheck.model_validate(safety_result),
         estimated_cost_usd=estimate_report_cost(settings.openai_model, usage),
         latency_ms=timer.elapsed_ms,
     )
-    trace_path = save_trace(trace, safety_result)
+    trace_path = save_trace(trace)
     return trace, trace_path
 
 

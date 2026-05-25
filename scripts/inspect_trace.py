@@ -22,6 +22,9 @@ def main() -> None:
     console.print(table)
     report = payload["final_report"]
     console.print(f"[bold]{report['service']}[/bold] {report['severity']}: {report['severity_rationale']}")
+    console.print(f"Model: {payload['model']} | Prompt: {payload.get('prompt_version', 'unknown')} | OpenAI: {payload.get('used_openai', 'unknown')}")
+    safety = payload.get("safety_check", {})
+    console.print(f"Safety: {safety.get('safe', 'unknown')} violations={safety.get('violations', [])}")
     console.print("Likely causes: " + ", ".join(report["likely_causes"]))
     console.print("Next actions: " + " | ".join(report["recommended_next_actions"]))
 

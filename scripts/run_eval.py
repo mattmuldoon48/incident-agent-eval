@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "src"))
 
 from incident_agent_eval.agent import run_agent
 from incident_agent_eval.evaluators import DEFAULT_THRESHOLDS, aggregate_results, evaluate_thresholds, score_trace
+from incident_agent_eval.llm_client import TRIAGE_PROMPT_VERSION
 from incident_agent_eval.report import print_eval_table
 from incident_agent_eval.schemas import EvalCase
 
@@ -38,10 +39,14 @@ def main() -> None:
     cases = [EvalCase.model_validate_json(line) for line in eval_path.read_text(encoding="utf-8").splitlines() if line.strip()]
     results = []
     trace_paths = []
+    models = set()
+    used_openai = False
     for case in cases:
         trace, trace_path = run_agent(ROOT / case.incident_file)
         results.append(score_trace(case, trace))
         trace_paths.append(str(trace_path))
+        models.add(trace.model)
+        used_openai = used_openai or trace.used_openai
 
     aggregate = aggregate_results(results)
     threshold_result = evaluate_thresholds(aggregate, DEFAULT_THRESHOLDS)
@@ -55,14 +60,20 @@ def main() -> None:
         "thresholds": threshold_result,
         "trace_paths": trace_paths,
         "eval_set": str(eval_path),
+        "model": ", ".join(sorted(models)),
+        "prompt_version": TRIAGE_PROMPT_VERSION,
+        "used_openai": used_openai,
     }
     output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    latest_path = output_path.parent / "latest.json"
+    latest_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     print_eval_table(results, aggregate)
     if threshold_result["passed"]:
         print("Thresholds passed")
     else:
         print(f"Thresholds failed: {', '.join(threshold_result['failed_metrics'])}")
     print(f"Saved eval report to {output_path}")
+    print(f"Updated latest eval report at {latest_path}")
     if args.fail_on_regression and not threshold_result["passed"]:
         raise SystemExit(1)
 

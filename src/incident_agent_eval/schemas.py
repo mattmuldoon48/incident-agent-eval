@@ -48,14 +48,22 @@ class TriageReport(StrictBaseModel):
     tools_used: list[str]
 
 
+class SafetyCheck(StrictBaseModel):
+    safe: bool
+    violations: list[str]
+
+
 class AgentTrace(StrictBaseModel):
     trace_id: str
     incident_id: str
     started_at: datetime
     completed_at: datetime
     model: str
+    prompt_version: str
+    used_openai: bool
     tool_calls: list[ToolCall]
     final_report: TriageReport
+    safety_check: SafetyCheck
     estimated_cost_usd: float
     latency_ms: int
 
