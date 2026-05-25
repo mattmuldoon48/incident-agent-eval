@@ -77,6 +77,7 @@ Eval JSON and Markdown reports also include per-case diagnostics for missing too
 
 Eval sets are validated before execution for missing incident files, duplicate case IDs, unknown required tools, malformed severities, and empty expected outputs.
 
+See [`docs/architecture.md`](docs/architecture.md) for a diagram and module-level architecture notes.
 See [`docs/eval_snapshot.md`](docs/eval_snapshot.md) for a committed snapshot of one OpenAI-backed eval run.
 For a reviewer-friendly narrative, see [`docs/project_walkthrough.md`](docs/project_walkthrough.md).
 For a concise presentation flow, see [`docs/demo_script.md`](docs/demo_script.md).
