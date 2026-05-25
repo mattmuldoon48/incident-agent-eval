@@ -103,6 +103,14 @@ make eval-strict
 make agent INCIDENT=data/incidents/incident_001.json
 ```
 
+After `python -m pip install -e ".[dev]"`, equivalent console commands are also available:
+
+```bash
+incident-agent data/incidents/incident_001.json --no-openai
+incident-eval --no-openai --fail-on-regression
+incident-trace --latest
+```
+
 ## Run One Incident
 
 ```bash
