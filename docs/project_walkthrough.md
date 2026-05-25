@@ -10,6 +10,7 @@ Run the deterministic local path first:
 make test
 make validate-eval
 make eval-strict
+make eval-case CASE_ID=eval_001
 make agent INCIDENT=data/incidents/incident_001.json
 make trace
 ```

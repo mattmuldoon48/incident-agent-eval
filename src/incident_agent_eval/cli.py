@@ -16,6 +16,7 @@ from incident_agent_eval.eval_sets import load_and_validate_eval_cases
 from incident_agent_eval.evaluators import DEFAULT_THRESHOLDS, aggregate_results, evaluate_thresholds, score_trace
 from incident_agent_eval.llm_client import TRIAGE_PROMPT_VERSION
 from incident_agent_eval.report import print_eval_table, print_triage_report
+from incident_agent_eval.schemas import EvalCase
 
 
 ROOT = get_settings().project_root
@@ -99,6 +100,17 @@ def write_markdown_report(path: Path, payload: dict) -> None:
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+def filter_cases(cases: list[EvalCase], case_ids: list[str] | None) -> list[EvalCase]:
+    if not case_ids:
+        return cases
+    requested = set(case_ids)
+    available = {case.id for case in cases}
+    missing = sorted(requested - available)
+    if missing:
+        raise ValueError(f"Unknown eval case id(s): {', '.join(missing)}")
+    return [case for case in cases if case.id in requested]
+
+
 def run_agent_main() -> None:
     parser = argparse.ArgumentParser(description="Run incident triage for one incident JSON file.")
     parser.add_argument("incident_file", help="Path to incident JSON file.")
@@ -144,12 +156,17 @@ def run_eval_main() -> None:
         action="store_true",
         help="Validate the eval set and exit without running the agent.",
     )
+    parser.add_argument(
+        "--case-id",
+        action="append",
+        help="Run only the specified eval case id. Can be passed more than once.",
+    )
     args = parser.parse_args()
 
     eval_path = Path(args.eval_set)
     if not eval_path.is_absolute():
         eval_path = ROOT / eval_path
-    cases = load_and_validate_eval_cases(eval_path, ROOT)
+    cases = filter_cases(load_and_validate_eval_cases(eval_path, ROOT), args.case_id)
     if args.validate_only:
         print(f"Eval set valid: {display_path(eval_path)} ({len(cases)} cases)")
         return
@@ -177,6 +194,7 @@ def run_eval_main() -> None:
         "thresholds": threshold_result,
         "trace_paths": trace_paths,
         "eval_set": display_path(eval_path),
+        "case_ids": [case.id for case in cases],
         "model": ", ".join(sorted(models)),
         "prompt_version": args.prompt_version,
         "used_openai": used_openai,

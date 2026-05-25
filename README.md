@@ -142,6 +142,12 @@ To validate eval-set definitions without running the agent:
 python scripts/run_eval.py --validate-only
 ```
 
+To run a single eval case:
+
+```bash
+python scripts/run_eval.py --no-openai --case-id eval_001
+```
+
 To force the deterministic fallback path even when `.env` has an API key:
 
 ```bash

@@ -2,6 +2,7 @@
 
 PYTHON ?= python3.11
 INCIDENT ?= data/incidents/incident_001.json
+CASE_ID ?=
 TRACE ?=
 RUN_A ?=
 RUN_B ?=
@@ -22,6 +23,9 @@ eval:
 
 eval-strict:
 	$(PYTHON) scripts/run_eval.py --no-openai --fail-on-regression
+
+eval-case:
+	$(PYTHON) scripts/run_eval.py --no-openai --case-id $(CASE_ID)
 
 eval-v1:
 	$(PYTHON) scripts/run_eval.py --prompt-version triage_agent_v1
