@@ -1,5 +1,7 @@
 # Incident Agent Eval: Evaluated AI Agent for Cloud Incident Triage
 
+[![CI](https://github.com/mattmuldoon48/incident-agent-eval/actions/workflows/ci.yml/badge.svg)](https://github.com/mattmuldoon48/incident-agent-eval/actions/workflows/ci.yml)
+
 Incident Agent Eval is a local Python portfolio project that demonstrates bounded AI agent design for cloud/application incident triage. It uses mock observability data, synthetic runbooks, read-only tools, tool-call tracing, safety checks, and an eval runner over realistic incident scenarios.
 
 This is not a production incident system. It does not connect to real AWS, Kubernetes, PagerDuty, Slack, Datadog, databases, or deployment systems.
@@ -46,6 +48,8 @@ The eval runner executes each incident case, saves traces, and scores:
 - forbidden action violations
 - latency
 - estimated cost
+
+See [`docs/eval_snapshot.md`](docs/eval_snapshot.md) for a committed snapshot of one OpenAI-backed eval run.
 
 ## Setup
 

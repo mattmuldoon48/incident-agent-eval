@@ -73,7 +73,7 @@ def deterministic_report(context: dict[str, Any]) -> TriageReport:
         actions = [
             "Page the Payments Operations owner if backlog continues to grow.",
             "Check provider latency and timeout logs.",
-            "Review worker concurrency and queue drain rate.",
+            "Review worker concurrency saturation and queue drain rate.",
         ]
     elif service == "auth-service":
         causes = ["bad environment variable", "invalid config rollout"]
