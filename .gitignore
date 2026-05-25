@@ -7,6 +7,8 @@ __pycache__/
 .mypy_cache/
 reports/traces/*.json
 reports/eval_runs/*.json
+reports/eval_runs/*.csv
+reports/eval_runs/*.md
 dist/
 build/
 *.egg-info/

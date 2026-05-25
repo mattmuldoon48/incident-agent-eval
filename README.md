@@ -115,8 +115,8 @@ Example output includes severity, likely causes, evidence, recommended next acti
 python scripts/run_eval.py
 ```
 
-This prints a rich summary table and saves an aggregate report under `reports/eval_runs/`.
-It also updates `reports/eval_runs/latest.json` for local inspection. Generated eval reports are intentionally gitignored.
+This prints a rich summary table and saves JSON, CSV, and Markdown reports under `reports/eval_runs/`.
+It also updates `reports/eval_runs/latest.json`, `latest.csv`, and `latest.md` for local inspection. Generated eval reports are intentionally gitignored.
 
 To fail the command when aggregate metrics miss the regression thresholds:
 
