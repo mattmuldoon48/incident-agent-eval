@@ -1,0 +1,109 @@
+# Incident Agent Eval: Evaluated AI Agent for Cloud Incident Triage
+
+Incident Agent Eval is a local Python portfolio project that demonstrates bounded AI agent design for cloud/application incident triage. It uses mock observability data, synthetic runbooks, read-only tools, tool-call tracing, safety checks, and an eval runner over realistic incident scenarios.
+
+This is not a production incident system. It does not connect to real AWS, Kubernetes, PagerDuty, Slack, Datadog, databases, or deployment systems.
+
+## Why This Exists
+
+The goal is to show reliable AI system engineering, not a demo chatbot. The agent is deliberately constrained: it gathers evidence from local files, follows a fixed read-only tool sequence, asks an OpenAI model for a structured report, validates that report with Pydantic, checks for unsafe recommendations, and scores outputs against eval cases.
+
+## Architecture
+
+- `data/incidents/`: synthetic incident inputs.
+- `data/mock_observability/`: local JSON/JSONL metrics, logs, deploys, and ownership data.
+- `data/runbooks/`: synthetic markdown runbooks.
+- `src/incident_agent_eval/tools.py`: read-only tools.
+- `src/incident_agent_eval/agent.py`: controlled triage loop.
+- `src/incident_agent_eval/safety.py`: destructive-action guardrails.
+- `src/incident_agent_eval/trace.py`: full trace persistence.
+- `src/incident_agent_eval/evaluators.py`: scoring logic.
+- `scripts/`: local CLI entry points.
+
+## Safety Model
+
+The agent can inspect local mock data and recommend human follow-up. It cannot mutate infrastructure or external systems. It must not rollback, restart pods, delete pods, scale deployments, change infrastructure, modify IAM, disable alerts, delete logs, or create tickets.
+
+Allowed language includes "consider rollback if deploy correlation is confirmed" and "page the service owner." Disallowed language includes "I rolled back the deployment" or "restart the pods now."
+
+## Read-Only Tools
+
+- `get_service_metrics(service_name, time_window_minutes)`
+- `search_logs(service_name, query, time_window_minutes)`
+- `get_recent_deploys(service_name, time_window_minutes)`
+- `get_service_owner(service_name)`
+- `search_runbooks(query)`
+- `classify_severity(incident_context)`
+
+## Eval Methodology
+
+The eval runner executes each incident case, saves traces, and scores:
+
+- severity correctness
+- required tool recall
+- likely cause coverage
+- recommendation coverage
+- forbidden action violations
+- latency
+- estimated cost
+
+## Setup
+
+```bash
+python3.11 -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+cp .env.example .env
+```
+
+Environment variables:
+
+```bash
+OPENAI_API_KEY=
+OPENAI_MODEL=gpt-4.1-mini
+```
+
+If `OPENAI_API_KEY` is empty, the project uses a deterministic local fallback report builder so the CLI and eval flow still run.
+
+## Run One Incident
+
+```bash
+python scripts/run_agent.py data/incidents/incident_001.json
+```
+
+Example output includes severity, likely causes, evidence, recommended next actions, escalation target, customer update draft, and the saved trace path.
+
+## Run Evals
+
+```bash
+python scripts/run_eval.py
+```
+
+This prints a rich summary table and saves an aggregate report under `reports/eval_runs/`.
+
+## Inspect A Trace
+
+```bash
+python scripts/inspect_trace.py reports/traces/some_trace.json
+```
+
+## Compare Eval Runs
+
+```bash
+python scripts/compare_runs.py reports/eval_runs/run_a.json reports/eval_runs/run_b.json
+```
+
+## Tests
+
+```bash
+pytest
+```
+
+## Roadmap
+
+- Add more incident scenarios and adversarial safety cases.
+- Expand evaluator scoring with evidence attribution quality.
+- Add prompt version comparisons.
+- Add latency and cost trend reports.
+- Add optional structured output model tests.
+- Later, consider a web UI or external integrations only after the local bounded agent is well evaluated.

@@ -1,0 +1,17 @@
+{
+  "checkout-api": {
+    "team": "Checkout Platform",
+    "escalation": "checkout-platform-oncall@example.com",
+    "slack": "#team-checkout-platform"
+  },
+  "payments-worker": {
+    "team": "Payments Operations",
+    "escalation": "payments-ops-oncall@example.com",
+    "slack": "#team-payments-ops"
+  },
+  "auth-service": {
+    "team": "Identity Platform",
+    "escalation": "identity-platform-oncall@example.com",
+    "slack": "#team-identity-platform"
+  }
+}

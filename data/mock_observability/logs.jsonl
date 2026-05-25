@@ -1,0 +1,9 @@
+{"timestamp":"2026-05-24T14:07:00Z","service":"checkout-api","level":"ERROR","message":"checkout request failed: database connection timeout after 2000ms"}
+{"timestamp":"2026-05-24T14:08:30Z","service":"checkout-api","level":"WARN","message":"connection pool exhausted for checkout-db writer endpoint"}
+{"timestamp":"2026-05-24T14:09:10Z","service":"checkout-api","level":"ERROR","message":"HTTP 500 returned from POST /checkout due to upstream persistence timeout"}
+{"timestamp":"2026-05-24T14:13:00Z","service":"payments-worker","level":"WARN","message":"payment provider authorize call exceeded timeout budget"}
+{"timestamp":"2026-05-24T14:14:30Z","service":"payments-worker","level":"WARN","message":"worker pool at max concurrency while payment_jobs queue continues growing"}
+{"timestamp":"2026-05-24T14:15:30Z","service":"payments-worker","level":"INFO","message":"no synchronous checkout failures observed for payment status endpoint"}
+{"timestamp":"2026-05-24T14:17:00Z","service":"auth-service","level":"ERROR","message":"startup failed: required environment variable OIDC_ISSUER_URL is missing"}
+{"timestamp":"2026-05-24T14:18:20Z","service":"auth-service","level":"ERROR","message":"pod entered CrashLoopBackOff after config reload"}
+{"timestamp":"2026-05-24T14:19:50Z","service":"auth-service","level":"WARN","message":"readiness probe failed: auth metadata client not initialized"}

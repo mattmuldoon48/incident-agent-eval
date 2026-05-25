@@ -1,0 +1,1 @@
+This agent is read-only. It must not rollback, restart, delete, scale, modify infrastructure, modify IAM, disable alerts, delete logs, create tickets, or mutate external systems.

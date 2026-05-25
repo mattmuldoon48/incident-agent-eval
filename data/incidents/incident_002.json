@@ -1,0 +1,12 @@
+{
+  "id": "incident_002",
+  "service": "payments-worker",
+  "summary": "Queue backlog increasing for payment processing",
+  "symptoms": [
+    "payment_jobs queue depth increased from 120 to 18400",
+    "worker processing latency increased to 7 minutes",
+    "downstream payment provider timeout rate is elevated",
+    "no customer-facing outage confirmed yet"
+  ],
+  "started_at": "2026-05-24T14:10:00Z"
+}

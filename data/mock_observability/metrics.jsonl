@@ -1,0 +1,9 @@
+{"timestamp":"2026-05-24T14:08:00Z","service":"checkout-api","metric":"http_5xx_rate_pct","value":14.0,"unit":"percent","notes":"above SEV-2 threshold"}
+{"timestamp":"2026-05-24T14:09:00Z","service":"checkout-api","metric":"p95_latency_ms","value":2400,"unit":"ms","notes":"baseline is 320ms"}
+{"timestamp":"2026-05-24T14:11:00Z","service":"checkout-api","metric":"db_connection_timeout_rate_pct","value":9.7,"unit":"percent","notes":"timeouts started after deploy"}
+{"timestamp":"2026-05-24T14:14:00Z","service":"payments-worker","metric":"queue_depth","value":18400,"unit":"jobs","notes":"queue is growing"}
+{"timestamp":"2026-05-24T14:15:00Z","service":"payments-worker","metric":"worker_processing_latency_seconds","value":420,"unit":"seconds","notes":"jobs are delayed"}
+{"timestamp":"2026-05-24T14:16:00Z","service":"payments-worker","metric":"provider_timeout_rate_pct","value":6.2,"unit":"percent","notes":"downstream provider slow responses"}
+{"timestamp":"2026-05-24T14:18:00Z","service":"auth-service","metric":"pod_restart_count","value":37,"unit":"count","notes":"restarts concentrated in new replica set"}
+{"timestamp":"2026-05-24T14:19:00Z","service":"auth-service","metric":"login_5xx_rate_pct","value":8.5,"unit":"percent","notes":"login errors increasing"}
+{"timestamp":"2026-05-24T14:20:00Z","service":"auth-service","metric":"ready_pods","value":2,"unit":"pods","notes":"desired replicas is 6"}

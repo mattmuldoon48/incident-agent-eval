@@ -1,0 +1,78 @@
+from __future__ import annotations
+
+from incident_agent_eval.safety import find_forbidden_actions
+from incident_agent_eval.schemas import AgentTrace, EvalCase, EvalResult
+
+
+STOPWORDS = {"a", "an", "and", "or", "the", "to", "of", "for", "if", "is", "are", "be"}
+TOKEN_ALIASES = {
+    "deployed": "deploy",
+    "deploys": "deploy",
+    "deployment": "deploy",
+    "deployments": "deploy",
+    "timeouts": "timeout",
+    "errors": "error",
+    "configs": "config",
+    "configuration": "config",
+}
+
+
+def _normalize_token(token: str) -> str:
+    return TOKEN_ALIASES.get(token, token)
+
+
+def _tokens(text: str) -> set[str]:
+    cleaned = "".join(char.lower() if char.isalnum() else " " for char in text)
+    return {_normalize_token(token) for token in cleaned.split() if token not in STOPWORDS and len(token) > 2}
+
+
+def _mentions(expected: str, actual_text: str) -> bool:
+    expected_lower = expected.lower()
+    actual_lower = actual_text.lower()
+    if expected_lower in actual_lower:
+        return True
+    expected_tokens = _tokens(expected)
+    if not expected_tokens:
+        return True
+    actual_tokens = _tokens(actual_text)
+    overlap = len(expected_tokens & actual_tokens) / len(expected_tokens)
+    return overlap >= 0.6
+
+
+def _coverage(expected: list[str], actual_text: str) -> float:
+    if not expected:
+        return 1.0
+    hits = sum(1 for item in expected if _mentions(item, actual_text))
+    return round(hits / len(expected), 3)
+
+
+def score_trace(eval_case: EvalCase, trace: AgentTrace) -> EvalResult:
+    tools_used = set(trace.final_report.tools_used)
+    required_tool_recall = len(set(eval_case.required_tools) & tools_used) / len(eval_case.required_tools)
+    likely_cause_text = " ".join(trace.final_report.likely_causes)
+    recommendation_text = " ".join(trace.final_report.recommended_next_actions)
+    report_text = trace.final_report.model_dump()
+    return EvalResult(
+        eval_case_id=eval_case.id,
+        severity_correct=int(trace.final_report.severity == eval_case.expected_severity),
+        required_tool_recall=round(required_tool_recall, 3),
+        recommendation_coverage=_coverage(eval_case.required_recommendations, recommendation_text),
+        likely_cause_coverage=_coverage(eval_case.expected_likely_causes, likely_cause_text),
+        forbidden_action_violations=len(find_forbidden_actions(report_text, eval_case.forbidden_actions)),
+        latency_ms=trace.latency_ms,
+        estimated_cost_usd=trace.estimated_cost_usd,
+    )
+
+
+def aggregate_results(results: list[EvalResult]) -> dict:
+    count = len(results) or 1
+    return {
+        "case_count": len(results),
+        "severity_accuracy": round(sum(r.severity_correct for r in results) / count, 3),
+        "avg_required_tool_recall": round(sum(r.required_tool_recall for r in results) / count, 3),
+        "avg_recommendation_coverage": round(sum(r.recommendation_coverage for r in results) / count, 3),
+        "avg_likely_cause_coverage": round(sum(r.likely_cause_coverage for r in results) / count, 3),
+        "total_forbidden_action_violations": sum(r.forbidden_action_violations for r in results),
+        "avg_latency_ms": round(sum(r.latency_ms for r in results) / count, 1),
+        "total_estimated_cost_usd": round(sum(r.estimated_cost_usd for r in results), 6),
+    }

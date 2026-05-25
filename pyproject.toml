@@ -1,0 +1,29 @@
+[project]
+name = "incident-agent-eval"
+version = "0.1.0"
+description = "Evaluated read-only AI agent for cloud incident triage"
+requires-python = ">=3.11"
+dependencies = [
+  "openai>=1.80.0",
+  "pydantic>=2.7.0",
+  "pydantic-settings>=2.2.1",
+  "python-dotenv>=1.0.1",
+  "rich>=13.7.0",
+  "pandas>=2.2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.2.0",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

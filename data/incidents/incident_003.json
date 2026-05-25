@@ -1,0 +1,12 @@
+{
+  "id": "incident_003",
+  "service": "auth-service",
+  "summary": "Auth service pods entering CrashLoopBackOff after config change",
+  "symptoms": [
+    "new pods fail readiness checks",
+    "CrashLoopBackOff seen after config rollout",
+    "logs mention missing OIDC_ISSUER_URL environment variable",
+    "login error rate is increasing"
+  ],
+  "started_at": "2026-05-24T14:12:00Z"
+}

@@ -1,0 +1,12 @@
+{
+  "id": "incident_001",
+  "service": "checkout-api",
+  "summary": "Elevated 5xx errors and latency after recent deploy",
+  "symptoms": [
+    "5xx rate increased to 14%",
+    "p95 latency increased from 320ms to 2.4s",
+    "deployment completed 18 minutes before the alert",
+    "some pods are restarting"
+  ],
+  "started_at": "2026-05-24T14:05:00Z"
+}
