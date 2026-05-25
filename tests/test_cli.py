@@ -18,6 +18,21 @@ def test_run_eval_validate_only_does_not_run_agent(monkeypatch, capsys) -> None:
     assert "5 cases" in captured.out
 
 
+def test_run_eval_list_cases_does_not_run_agent(monkeypatch, capsys) -> None:
+    def fail_if_called(*_args, **_kwargs):
+        raise AssertionError("run_agent should not be called in list-cases mode")
+
+    monkeypatch.setattr(cli, "run_agent", fail_if_called)
+    monkeypatch.setattr(sys, "argv", ["incident-eval", "--list-cases"])
+
+    cli.run_eval_main()
+
+    captured = capsys.readouterr()
+    assert "Eval Cases" in captured.out
+    assert "eval_001" in captured.out
+    assert "SEV-2" in captured.out
+
+
 def test_filter_cases_selects_requested_ids() -> None:
     cases = load_and_validate_eval_cases(cli.ROOT / "data/eval_sets/incident_eval_v1.jsonl", cli.ROOT)
 

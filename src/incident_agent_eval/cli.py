@@ -111,6 +111,22 @@ def filter_cases(cases: list[EvalCase], case_ids: list[str] | None) -> list[Eval
     return [case for case in cases if case.id in requested]
 
 
+def print_case_list(cases: list[EvalCase]) -> None:
+    table = Table(title="Eval Cases")
+    table.add_column("case")
+    table.add_column("incident")
+    table.add_column("expected severity")
+    table.add_column("required tools")
+    for case in cases:
+        table.add_row(
+            case.id,
+            case.incident_file,
+            case.expected_severity,
+            str(len(case.required_tools)),
+        )
+    Console().print(table)
+
+
 def run_agent_main() -> None:
     parser = argparse.ArgumentParser(description="Run incident triage for one incident JSON file.")
     parser.add_argument("incident_file", help="Path to incident JSON file.")
@@ -161,12 +177,20 @@ def run_eval_main() -> None:
         action="append",
         help="Run only the specified eval case id. Can be passed more than once.",
     )
+    parser.add_argument(
+        "--list-cases",
+        action="store_true",
+        help="List eval cases and exit without running the agent.",
+    )
     args = parser.parse_args()
 
     eval_path = Path(args.eval_set)
     if not eval_path.is_absolute():
         eval_path = ROOT / eval_path
     cases = filter_cases(load_and_validate_eval_cases(eval_path, ROOT), args.case_id)
+    if args.list_cases:
+        print_case_list(cases)
+        return
     if args.validate_only:
         print(f"Eval set valid: {display_path(eval_path)} ({len(cases)} cases)")
         return

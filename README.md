@@ -145,6 +145,7 @@ python scripts/run_eval.py --validate-only
 To run a single eval case:
 
 ```bash
+python scripts/run_eval.py --list-cases
 python scripts/run_eval.py --no-openai --case-id eval_001
 ```
 

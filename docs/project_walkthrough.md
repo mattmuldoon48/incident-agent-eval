@@ -9,6 +9,7 @@ Run the deterministic local path first:
 ```bash
 make test
 make validate-eval
+incident-eval --list-cases
 make eval-strict
 make eval-case CASE_ID=eval_001
 make agent INCIDENT=data/incidents/incident_001.json
