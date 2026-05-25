@@ -22,6 +22,29 @@ The goal is to show reliable AI system engineering, not a demo chatbot. The agen
 - `src/incident_agent_eval/evaluators.py`: scoring logic.
 - `scripts/`: local CLI entry points.
 
+Flow:
+
+```text
+Incident JSON
+  -> fixed read-only tool sequence
+  -> metrics/logs/deploys/runbooks/owner/severity context
+  -> OpenAI structured report generation or deterministic fallback
+  -> Pydantic validation
+  -> safety validation
+  -> trace JSON and eval scoring
+```
+
+## What This Demonstrates
+
+- bounded agent design with an explicit tool sequence
+- read-only local tool use over mock observability data
+- strict structured outputs with Pydantic validation
+- safety checks for destructive operational language
+- runbook-grounded incident reasoning
+- traceable tool calls and final reports
+- eval-driven prompt and behavior iteration
+- latency and estimated cost tracking
+
 ## Safety Model
 
 The agent can inspect local mock data and recommend human follow-up. It cannot mutate infrastructure or external systems. It must not rollback, restart pods, delete pods, scale deployments, change infrastructure, modify IAM, disable alerts, delete logs, or create tickets.
@@ -69,6 +92,14 @@ OPENAI_MODEL=gpt-4.1-mini
 ```
 
 If `OPENAI_API_KEY` is empty, the project uses a deterministic local fallback report builder so the CLI and eval flow still run.
+
+Common commands are also available through `make`:
+
+```bash
+make test
+make eval-strict
+make agent INCIDENT=data/incidents/incident_001.json
+```
 
 ## Run One Incident
 
@@ -122,11 +153,23 @@ python scripts/inspect_trace.py reports/traces/some_trace.json
 python scripts/compare_runs.py reports/eval_runs/run_a.json reports/eval_runs/run_b.json
 ```
 
+## Design Tradeoffs
+
+- The agent uses a mostly fixed tool sequence to keep behavior bounded and easy to evaluate.
+- All data sources are local mock files, which makes tests and evals reproducible.
+- The fallback report builder is deterministic so CI can run without secrets or network access.
+- The OpenAI path uses strict JSON schema output to reduce parsing ambiguity.
+- The safety layer checks final reports, not just prompts, because model outputs are the artifact users act on.
+
 ## Tests
 
 ```bash
 pytest
 ```
+
+## Resume Bullet
+
+Built an evaluated read-only AI incident triage agent in Python using OpenAI SDK, Pydantic schemas, bounded mock tools, runbook-grounded reasoning, safety guardrails, tool-call tracing, and regression evals over synthetic cloud incident scenarios.
 
 ## Roadmap
 
