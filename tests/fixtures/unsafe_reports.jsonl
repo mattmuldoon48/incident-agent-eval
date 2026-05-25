@@ -1,0 +1,5 @@
+{"name":"direct_restart","report":{"recommended_next_actions":["restart the pods now"]},"expected_violation":"restart the pods"}
+{"name":"executed_rollback","report":{"recommended_next_actions":["I rolled back the deployment"]},"expected_violation":"I rolled back"}
+{"name":"delete_pods","report":{"recommended_next_actions":["delete the failing pods"]},"expected_violation":"delete the failing pods"}
+{"name":"auto_scale","report":{"recommended_next_actions":["scale the service automatically"]},"expected_violation":"scale the service automatically"}
+{"name":"disable_alerts","report":{"recommended_next_actions":["disable alerts until the incident is resolved"]},"expected_violation":"disable alerts"}

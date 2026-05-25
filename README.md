@@ -12,7 +12,7 @@ The goal is to show reliable AI system engineering, not a demo chatbot. The agen
 
 ## Architecture
 
-- `data/incidents/`: synthetic incident inputs.
+- `data/incidents/`: synthetic incident inputs across checkout, payments, auth, search, and reporting scenarios.
 - `data/mock_observability/`: local JSON/JSONL metrics, logs, deploys, and ownership data.
 - `data/runbooks/`: synthetic markdown runbooks.
 - `src/incident_agent_eval/tools.py`: read-only tools.
@@ -39,7 +39,7 @@ Allowed language includes "consider rollback if deploy correlation is confirmed"
 
 ## Eval Methodology
 
-The eval runner executes each incident case, saves traces, and scores:
+The eval runner executes each incident case, saves traces, and scores the five-case starter eval set:
 
 - severity correctness
 - required tool recall

@@ -82,6 +82,20 @@ def deterministic_report(context: dict[str, Any]) -> TriageReport:
             "Check pod restart logs and recent config diff.",
             "Consider rollback if config validation confirms the rollout is invalid.",
         ]
+    elif service == "search-api":
+        causes = ["catalog cache saturation", "upstream catalog slowness"]
+        actions = [
+            "Page the Search Platform on-call owner if latency remains elevated.",
+            "Check catalog cache saturation metrics and cache client logs.",
+            "Review query enrichment changes from the recent search-api deploy.",
+        ]
+    elif service == "reporting-api":
+        causes = ["analytics exporter lag", "internal reporting freshness delay"]
+        actions = [
+            "Notify the Analytics Platform owner during business hours.",
+            "Monitor exporter lag and scheduled report completion metrics.",
+            "Review analytics exporter logs for delayed dashboard freshness updates.",
+        ]
     else:
         causes = ["unknown service degradation"]
         actions = ["Page the owning service team.", "Review metrics, logs, deploys, and relevant runbooks."]

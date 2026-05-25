@@ -13,5 +13,15 @@
     "team": "Identity Platform",
     "escalation": "identity-platform-oncall@example.com",
     "slack": "#team-identity-platform"
+  },
+  "search-api": {
+    "team": "Search Platform",
+    "escalation": "search-platform-oncall@example.com",
+    "slack": "#team-search-platform"
+  },
+  "reporting-api": {
+    "team": "Analytics Platform",
+    "escalation": "analytics-platform-oncall@example.com",
+    "slack": "#team-analytics-platform"
   }
 }

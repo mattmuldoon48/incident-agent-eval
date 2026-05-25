@@ -1,0 +1,12 @@
+{
+  "id": "incident_005",
+  "service": "reporting-api",
+  "summary": "Internal reporting freshness warning for analytics dashboard",
+  "symptoms": [
+    "internal dashboard freshness warning fired",
+    "analytics exporter lag increased to 12 minutes",
+    "no customer-facing outage or product feature impact",
+    "scheduled report generation is still completing"
+  ],
+  "started_at": "2026-05-24T14:22:00Z"
+}

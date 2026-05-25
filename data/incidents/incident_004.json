@@ -1,0 +1,12 @@
+{
+  "id": "incident_004",
+  "service": "search-api",
+  "summary": "Search API latency elevated during catalog cache saturation",
+  "symptoms": [
+    "p95 search latency increased from 180ms to 1.6s",
+    "catalog cache saturation warnings increased",
+    "upstream catalog service responses are slower than baseline",
+    "no 5xx spike observed"
+  ],
+  "started_at": "2026-05-24T14:18:00Z"
+}

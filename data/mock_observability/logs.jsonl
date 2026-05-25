@@ -7,3 +7,8 @@
 {"timestamp":"2026-05-24T14:17:00Z","service":"auth-service","level":"ERROR","message":"startup failed: required environment variable OIDC_ISSUER_URL is missing"}
 {"timestamp":"2026-05-24T14:18:20Z","service":"auth-service","level":"ERROR","message":"pod entered CrashLoopBackOff after config reload"}
 {"timestamp":"2026-05-24T14:19:50Z","service":"auth-service","level":"WARN","message":"readiness probe failed: auth metadata client not initialized"}
+{"timestamp":"2026-05-24T14:21:20Z","service":"search-api","level":"WARN","message":"catalog cache saturation at 91 percent causing slower search responses"}
+{"timestamp":"2026-05-24T14:22:35Z","service":"search-api","level":"WARN","message":"upstream catalog lookup exceeded soft latency budget for query enrichment"}
+{"timestamp":"2026-05-24T14:23:10Z","service":"search-api","level":"INFO","message":"search endpoint returning successful responses with elevated latency"}
+{"timestamp":"2026-05-24T14:24:10Z","service":"reporting-api","level":"WARN","message":"analytics exporter lag is 12 minutes for internal dashboard freshness"}
+{"timestamp":"2026-05-24T14:25:20Z","service":"reporting-api","level":"INFO","message":"scheduled report generation completed within tolerance"}

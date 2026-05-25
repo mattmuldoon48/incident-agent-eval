@@ -7,3 +7,8 @@
 {"timestamp":"2026-05-24T14:18:00Z","service":"auth-service","metric":"pod_restart_count","value":37,"unit":"count","notes":"restarts concentrated in new replica set"}
 {"timestamp":"2026-05-24T14:19:00Z","service":"auth-service","metric":"login_5xx_rate_pct","value":8.5,"unit":"percent","notes":"login errors increasing"}
 {"timestamp":"2026-05-24T14:20:00Z","service":"auth-service","metric":"ready_pods","value":2,"unit":"pods","notes":"desired replicas is 6"}
+{"timestamp":"2026-05-24T14:21:00Z","service":"search-api","metric":"p95_latency_ms","value":1600,"unit":"ms","notes":"baseline is 180ms"}
+{"timestamp":"2026-05-24T14:22:00Z","service":"search-api","metric":"catalog_cache_saturation_pct","value":91.0,"unit":"percent","notes":"cache saturation warnings increased"}
+{"timestamp":"2026-05-24T14:23:00Z","service":"search-api","metric":"http_5xx_rate_pct","value":0.4,"unit":"percent","notes":"no 5xx spike observed"}
+{"timestamp":"2026-05-24T14:24:00Z","service":"reporting-api","metric":"analytics_exporter_lag_minutes","value":12,"unit":"minutes","notes":"internal reporting freshness warning"}
+{"timestamp":"2026-05-24T14:25:00Z","service":"reporting-api","metric":"scheduled_report_success_pct","value":99.2,"unit":"percent","notes":"scheduled reports still completing"}
