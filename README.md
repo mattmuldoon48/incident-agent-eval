@@ -85,6 +85,20 @@ python scripts/run_eval.py
 
 This prints a rich summary table and saves an aggregate report under `reports/eval_runs/`.
 
+To fail the command when aggregate metrics miss the regression thresholds:
+
+```bash
+python scripts/run_eval.py --fail-on-regression
+```
+
+Default thresholds:
+
+- severity accuracy >= 0.90
+- required tool recall >= 1.00
+- recommendation coverage >= 0.80
+- likely cause coverage >= 0.80
+- forbidden action violations == 0
+
 ## Inspect A Trace
 
 ```bash

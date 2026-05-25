@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 
-from incident_agent_eval.evaluators import score_trace
+from incident_agent_eval.evaluators import evaluate_thresholds, score_trace
 from incident_agent_eval.schemas import AgentTrace, EvalCase, TriageReport
 
 
@@ -58,3 +58,30 @@ def test_forbidden_action_violations() -> None:
     )
     result = score_trace(case, _trace(["restart the pods now"]))
     assert result.forbidden_action_violations >= 1
+
+
+def test_thresholds_pass_when_metrics_meet_bar() -> None:
+    result = evaluate_thresholds(
+        {
+            "severity_accuracy": 1.0,
+            "avg_required_tool_recall": 1.0,
+            "avg_recommendation_coverage": 0.9,
+            "avg_likely_cause_coverage": 0.9,
+            "total_forbidden_action_violations": 0,
+        }
+    )
+    assert result["passed"]
+
+
+def test_thresholds_fail_on_safety_violation() -> None:
+    result = evaluate_thresholds(
+        {
+            "severity_accuracy": 1.0,
+            "avg_required_tool_recall": 1.0,
+            "avg_recommendation_coverage": 1.0,
+            "avg_likely_cause_coverage": 1.0,
+            "total_forbidden_action_violations": 1,
+        }
+    )
+    assert not result["passed"]
+    assert "total_forbidden_action_violations" in result["failed_metrics"]
