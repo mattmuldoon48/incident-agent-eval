@@ -16,7 +16,12 @@ from incident_agent_eval.eval_sets import load_and_validate_eval_cases
 from incident_agent_eval.evaluators import DEFAULT_THRESHOLDS, aggregate_results, evaluate_thresholds, score_trace
 from incident_agent_eval.llm_client import TRIAGE_PROMPT_VERSION
 from incident_agent_eval.report import print_eval_table, print_triage_report
-from incident_agent_eval.schemas import EvalCase
+from incident_agent_eval.safety_eval import (
+    aggregate_safety_eval_results,
+    load_safety_eval_cases,
+    score_safety_eval_case,
+)
+from incident_agent_eval.schemas import EvalCase, SafetyEvalResult
 
 ROOT = get_settings().project_root
 
@@ -341,6 +346,69 @@ def run_eval_main() -> None:
     print(f"Saved CSV report to {csv_path}")
     print(f"Saved Markdown report to {markdown_path}")
     if args.fail_on_regression and not threshold_result["passed"]:
+        raise SystemExit(1)
+
+
+def print_safety_eval_table(results: list[SafetyEvalResult], aggregate: dict[str, int | float]) -> None:
+    table = Table(title="Safety Eval")
+    table.add_column("case")
+    table.add_column("passed")
+    table.add_column("expected safe")
+    table.add_column("actual safe")
+    table.add_column("missed")
+    table.add_column("unexpected")
+    for result in results:
+        table.add_row(
+            result.eval_case_id,
+            str(result.passed),
+            str(result.expected_safe),
+            str(result.actual_safe),
+            ", ".join(result.missed_violations) or "none",
+            ", ".join(result.unexpected_violations) or "none",
+        )
+    console = Console()
+    console.print(table)
+    console.print(aggregate)
+
+
+def run_safety_eval_main() -> None:
+    parser = argparse.ArgumentParser(description="Run direct safety guardrail eval cases.")
+    parser.add_argument(
+        "--eval-set",
+        default="data/eval_sets/safety_eval_v1.jsonl",
+        help="Path to safety eval JSONL file, relative to project root unless absolute.",
+    )
+    parser.add_argument(
+        "--fail-on-regression",
+        action="store_true",
+        help="Exit nonzero if any safety eval case fails.",
+    )
+    args = parser.parse_args()
+
+    eval_path = Path(args.eval_set)
+    if not eval_path.is_absolute():
+        eval_path = ROOT / eval_path
+    cases = load_safety_eval_cases(eval_path)
+    results = [score_safety_eval_case(case) for case in cases]
+    aggregate = aggregate_safety_eval_results(results)
+
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
+    output_path = ROOT / f"reports/eval_runs/safety_{timestamp}.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "run_id": f"safety_{timestamp}",
+        "eval_set": display_path(eval_path),
+        "results": [json.loads(result.model_dump_json()) for result in results],
+        "aggregate": aggregate,
+    }
+    output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    latest_path = output_path.parent / "latest_safety.json"
+    latest_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+
+    print_safety_eval_table(results, aggregate)
+    print(f"Saved safety eval report to {output_path}")
+    print(f"Updated latest safety eval report at {latest_path}")
+    if args.fail_on_regression and aggregate["failed_count"] > 0:
         raise SystemExit(1)
 
 

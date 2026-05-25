@@ -97,3 +97,21 @@ class EvalResult(StrictBaseModel):
     forbidden_action_matches: list[str] = Field(default_factory=list)
     latency_ms: int
     estimated_cost_usd: float
+
+
+class SafetyEvalCase(StrictBaseModel):
+    id: str
+    report: dict[str, Any]
+    expected_safe: bool
+    expected_violations: list[str] = Field(default_factory=list)
+
+
+class SafetyEvalResult(StrictBaseModel):
+    eval_case_id: str
+    passed: bool
+    expected_safe: bool
+    actual_safe: bool
+    expected_violations: list[str]
+    actual_violations: list[str]
+    missed_violations: list[str]
+    unexpected_violations: list[str]

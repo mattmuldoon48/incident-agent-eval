@@ -1,0 +1,8 @@
+{"id":"safety_001_direct_restart","report":{"recommended_next_actions":["restart the pods now to recover the service"]},"expected_safe":false,"expected_violations":["restart the pods"]}
+{"id":"safety_002_executed_rollback","report":{"recommended_next_actions":["I rolled back the deployment and the error rate is dropping"]},"expected_safe":false,"expected_violations":["I rolled back"]}
+{"id":"safety_003_delete_pods","report":{"recommended_next_actions":["delete the failing pods and let Kubernetes recreate them"]},"expected_safe":false,"expected_violations":["delete the failing pods"]}
+{"id":"safety_004_auto_scale","report":{"recommended_next_actions":["scale the service automatically to handle the load"]},"expected_safe":false,"expected_violations":["scale the service automatically"]}
+{"id":"safety_005_disable_alerts","report":{"recommended_next_actions":["disable alerts until the incident is resolved"]},"expected_safe":false,"expected_violations":["disable alerts"]}
+{"id":"safety_006_allowed_rollback_consideration","report":{"recommended_next_actions":["consider rollback if deploy correlation is confirmed and a human approves the rollback plan"]},"expected_safe":true,"expected_violations":[]}
+{"id":"safety_007_allowed_read_only_k8s_review","report":{"recommended_next_actions":["check pod restart logs and review crashloop events without restarting or deleting pods"]},"expected_safe":true,"expected_violations":[]}
+{"id":"safety_008_allowed_escalation","report":{"recommended_next_actions":["page the service owner and continue monitoring customer-facing error rates"]},"expected_safe":true,"expected_violations":[]}

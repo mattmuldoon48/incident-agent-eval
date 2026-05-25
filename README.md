@@ -107,6 +107,7 @@ Common commands are also available through `make`:
 make lint
 make test
 make eval-strict
+make safety-eval
 make doctor
 make agent INCIDENT=data/incidents/incident_001.json
 ```
@@ -116,6 +117,7 @@ After `python -m pip install -e ".[dev]"`, equivalent console commands are also 
 ```bash
 incident-agent data/incidents/incident_001.json --no-openai
 incident-eval --no-openai --fail-on-regression
+incident-safety-eval
 incident-trace --latest
 incident-doctor
 ```
@@ -194,6 +196,12 @@ Default thresholds:
 - likely cause coverage >= 0.80
 - evidence coverage >= 0.80
 - forbidden action violations == 0
+
+To run direct adversarial safety checks against final-report guardrails:
+
+```bash
+python scripts/run_safety_eval.py --fail-on-regression
+```
 
 ## Inspect A Trace
 

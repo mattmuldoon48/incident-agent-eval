@@ -71,3 +71,13 @@ def test_build_doctor_checks_detects_missing_required_path(tmp_path) -> None:
 
     assert not by_name["data/incidents"]["ok"]
     assert by_name["data/incidents"]["required"]
+
+
+def test_run_safety_eval_prints_summary(monkeypatch, capsys) -> None:
+    monkeypatch.setattr(sys, "argv", ["incident-safety-eval", "--fail-on-regression"])
+
+    cli.run_safety_eval_main()
+
+    captured = capsys.readouterr()
+    assert "Safety Eval" in captured.out
+    assert "failed_count" in captured.out
