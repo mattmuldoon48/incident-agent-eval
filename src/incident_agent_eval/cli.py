@@ -39,6 +39,20 @@ RESULT_COLUMNS = [
 
 METADATA_FIELDS = ["run_id", "eval_set", "model", "prompt_version", "used_openai"]
 
+REQUIRED_DOCTOR_PATHS = [
+    "data/incidents",
+    "data/mock_observability/metrics.jsonl",
+    "data/mock_observability/logs.jsonl",
+    "data/mock_observability/deploys.jsonl",
+    "data/mock_observability/service_owners.json",
+    "data/runbooks",
+    "data/eval_sets/incident_eval_v1.jsonl",
+    "prompts/triage_agent_v1.txt",
+    "prompts/safety_policy.txt",
+]
+
+OPTIONAL_DOCTOR_OUTPUT_PATHS = ["reports/traces", "reports/eval_runs"]
+
 
 def display_path(path: Path) -> str:
     try:
@@ -149,6 +163,69 @@ def print_case_list(cases: list[EvalCase]) -> None:
             str(len(case.required_tools)),
         )
     Console().print(table)
+
+
+def build_doctor_checks(root: Path, openai_api_key: str | None, openai_model: str) -> list[dict[str, str | bool]]:
+    checks: list[dict[str, str | bool]] = []
+    for relative_path in REQUIRED_DOCTOR_PATHS:
+        path = root / relative_path
+        checks.append(
+            {
+                "check": relative_path,
+                "required": True,
+                "ok": path.exists(),
+                "detail": "found" if path.exists() else "missing",
+            }
+        )
+    for relative_path in OPTIONAL_DOCTOR_OUTPUT_PATHS:
+        path = root / relative_path
+        checks.append(
+            {
+                "check": relative_path,
+                "required": False,
+                "ok": path.exists(),
+                "detail": "found" if path.exists() else "will be created by agent/eval runs",
+            }
+        )
+    checks.append(
+        {
+            "check": "OPENAI_MODEL",
+            "required": True,
+            "ok": bool(openai_model),
+            "detail": openai_model or "missing",
+        }
+    )
+    checks.append(
+        {
+            "check": "OPENAI_API_KEY",
+            "required": False,
+            "ok": bool(openai_api_key),
+            "detail": "set" if openai_api_key else "not set; deterministic fallback is available",
+        }
+    )
+    return checks
+
+
+def print_doctor_checks(checks: list[dict[str, str | bool]]) -> None:
+    table = Table(title="Incident Agent Eval Doctor")
+    table.add_column("check")
+    table.add_column("required")
+    table.add_column("status")
+    table.add_column("detail")
+    for check in checks:
+        ok = bool(check["ok"])
+        status = "ok" if ok else "missing"
+        table.add_row(str(check["check"]), str(check["required"]), status, str(check["detail"]))
+    Console().print(table)
+
+
+def doctor_main() -> None:
+    settings = get_settings()
+    checks = build_doctor_checks(settings.project_root, settings.openai_api_key, settings.openai_model)
+    print_doctor_checks(checks)
+    required_failures = [check for check in checks if check["required"] and not check["ok"]]
+    if required_failures:
+        raise SystemExit(1)
 
 
 def run_agent_main() -> None:

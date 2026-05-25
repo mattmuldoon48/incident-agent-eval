@@ -105,6 +105,7 @@ Common commands are also available through `make`:
 make lint
 make test
 make eval-strict
+make doctor
 make agent INCIDENT=data/incidents/incident_001.json
 ```
 
@@ -114,6 +115,7 @@ After `python -m pip install -e ".[dev]"`, equivalent console commands are also 
 incident-agent data/incidents/incident_001.json --no-openai
 incident-eval --no-openai --fail-on-regression
 incident-trace --latest
+incident-doctor
 ```
 
 ## Run One Incident

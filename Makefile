@@ -1,4 +1,4 @@
-.PHONY: setup lint test validate-eval eval eval-strict eval-v1 eval-v2 agent trace compare
+.PHONY: setup doctor lint test validate-eval eval eval-strict eval-v1 eval-v2 agent trace compare
 
 PYTHON ?= python3.11
 INCIDENT ?= data/incidents/incident_001.json
@@ -14,6 +14,9 @@ setup:
 
 test:
 	$(PYTHON) -m pytest
+
+doctor:
+	$(PYTHON) scripts/doctor.py
 
 lint:
 	$(PYTHON) -m ruff check src scripts tests

@@ -23,6 +23,7 @@ incident-agent = "incident_agent_eval.cli:run_agent_main"
 incident-eval = "incident_agent_eval.cli:run_eval_main"
 incident-trace = "incident_agent_eval.cli:inspect_trace_main"
 incident-compare = "incident_agent_eval.cli:compare_runs_main"
+incident-doctor = "incident_agent_eval.cli:doctor_main"
 
 [build-system]
 requires = ["setuptools>=68"]

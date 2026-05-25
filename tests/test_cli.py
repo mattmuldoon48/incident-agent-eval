@@ -50,3 +50,24 @@ def test_filter_cases_rejects_unknown_id() -> None:
         assert "eval_missing" in str(exc)
     else:
         raise AssertionError("Expected unknown eval case id to raise")
+
+
+def test_build_doctor_checks_marks_required_paths() -> None:
+    checks = cli.build_doctor_checks(cli.ROOT, openai_api_key=None, openai_model="gpt-4.1-mini")
+
+    by_name = {str(check["check"]): check for check in checks}
+
+    assert by_name["data/incidents"]["ok"]
+    assert by_name["data/incidents"]["required"]
+    assert by_name["OPENAI_MODEL"]["ok"]
+    assert not by_name["OPENAI_API_KEY"]["required"]
+    assert "fallback" in str(by_name["OPENAI_API_KEY"]["detail"])
+
+
+def test_build_doctor_checks_detects_missing_required_path(tmp_path) -> None:
+    checks = cli.build_doctor_checks(tmp_path, openai_api_key="secret", openai_model="gpt-4.1-mini")
+
+    by_name = {str(check["check"]): check for check in checks}
+
+    assert not by_name["data/incidents"]["ok"]
+    assert by_name["data/incidents"]["required"]
