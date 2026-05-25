@@ -81,6 +81,10 @@ The safety layer flags destructive or overreaching operational language, includi
 
 Allowed recommendations include paging owners, checking logs, reviewing metrics, and considering rollback only after human confirmation. The agent never performs actions.
 
+## Limitations
+
+The system is intentionally local and synthetic. It does not connect to production systems, execute remediation, create tickets, or page responders. The severity classifier and evidence scorer are deterministic approximations designed for portfolio evaluation, not operational authority.
+
 ## Interview Talking Points
 
 - Why fixed tool sequencing is appropriate for a portfolio MVP.

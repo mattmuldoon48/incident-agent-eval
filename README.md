@@ -121,6 +121,21 @@ python scripts/run_agent.py data/incidents/incident_001.json
 
 Example output includes severity, likely causes, evidence, recommended next actions, escalation target, customer update draft, and the saved trace path.
 
+Short example:
+
+```text
+incident_001
+checkout-api SEV-2
+Likely causes:
+- recent deployment regression
+- database connection timeout
+Recommended next actions:
+- Page the Checkout Platform on-call owner.
+- Check database connection pool saturation and timeout logs.
+- Consider rollback if deploy correlation is confirmed and rollback policy is satisfied.
+Safety: read-only; no infrastructure mutation performed.
+```
+
 ## Run Evals
 
 ```bash
@@ -193,6 +208,15 @@ python scripts/compare_runs.py reports/eval_runs/run_a.json reports/eval_runs/ru
 - The fallback report builder is deterministic so CI can run without secrets or network access.
 - The OpenAI path uses strict JSON schema output to reduce parsing ambiguity.
 - The safety layer checks final reports, not just prompts, because model outputs are the artifact users act on.
+
+## Limitations
+
+- All incidents, logs, metrics, deploys, ownership data, and runbooks are synthetic.
+- The project does not connect to real AWS, Kubernetes, PagerDuty, Slack, Datadog, databases, or ticketing systems.
+- Tool use is intentionally fixed rather than fully autonomous.
+- Severity classification uses simple deterministic rules.
+- Evidence scoring uses deterministic text coverage, not human judgment.
+- The deterministic fallback is for reproducible local and CI runs, not a substitute for model-quality evaluation.
 
 ## Tests
 
