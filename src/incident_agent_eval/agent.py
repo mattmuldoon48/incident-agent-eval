@@ -5,7 +5,12 @@ from pathlib import Path
 from typing import Any, Callable
 
 from incident_agent_eval.config import get_settings
-from incident_agent_eval.llm_client import TRIAGE_PROMPT_VERSION, estimate_report_cost, generate_triage_report
+from incident_agent_eval.llm_client import (
+    TRIAGE_PROMPT_VERSION,
+    estimate_report_cost,
+    generate_triage_report,
+    prompt_sha256,
+)
 from incident_agent_eval.metrics import Timer
 from incident_agent_eval.safety import validate_final_report
 from incident_agent_eval.schemas import AgentTrace, IncidentInput, SafetyCheck, ToolCall
@@ -94,6 +99,7 @@ def run_agent(
             "severity": severity or {"severity": "SEV-4", "explanation": "Severity classifier failed."},
             "tools_used": [call.tool_name for call in tool_calls if call.success],
         }
+        prompt_hash = prompt_sha256(prompt_version)
         report, usage, used_openai = generate_triage_report(context, prompt_version=prompt_version, use_openai=use_openai)
         safety_result = validate_final_report(report.model_dump())
         if not safety_result["safe"]:
@@ -107,6 +113,7 @@ def run_agent(
         completed_at=completed,
         model=settings.openai_model,
         prompt_version=prompt_version,
+        prompt_sha256=prompt_hash,
         used_openai=used_openai,
         tool_calls=tool_calls,
         final_report=report,

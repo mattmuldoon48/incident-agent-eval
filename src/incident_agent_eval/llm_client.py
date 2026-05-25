@@ -1,6 +1,8 @@
 from __future__ import annotations
 
+import hashlib
 import json
+from pathlib import Path
 from typing import Any
 
 from openai import OpenAI, OpenAIError
@@ -13,12 +15,20 @@ from incident_agent_eval.schemas import TriageReport
 TRIAGE_PROMPT_VERSION = "triage_agent_v1"
 
 
-def _load_prompt(name: str) -> str:
-    path = get_settings().project_root / "prompts" / name
+def prompt_path(prompt_version: str) -> Path:
+    return get_settings().project_root / "prompts" / f"{prompt_version}.txt"
+
+
+def load_prompt(prompt_version: str) -> str:
+    path = prompt_path(prompt_version)
     if not path.exists():
         available = ", ".join(path.stem for path in sorted(path.parent.glob("*.txt")))
         raise FileNotFoundError(f"Prompt file not found: {path.name}. Available prompts: {available}")
     return path.read_text(encoding="utf-8")
+
+
+def prompt_sha256(prompt_version: str) -> str:
+    return hashlib.sha256(load_prompt(prompt_version).encode("utf-8")).hexdigest()
 
 
 def fallback_report(context: dict[str, Any], note: str) -> TriageReport:
@@ -33,7 +43,7 @@ def generate_triage_report(
     use_openai: bool = True,
 ) -> tuple[TriageReport, TokenUsage, bool]:
     settings = get_settings()
-    prompt = _load_prompt(f"{prompt_version}.txt")
+    prompt = load_prompt(prompt_version)
     if not use_openai or not settings.openai_api_key:
         return deterministic_report(context), TokenUsage(), False
 

@@ -56,6 +56,15 @@ def test_generate_triage_report_validates_prompt_version_without_api_key(monkeyp
         llm_client.generate_triage_report(_context(), prompt_version="missing_prompt")
 
 
+def test_prompt_sha256_returns_stable_hash(monkeypatch) -> None:
+    monkeypatch.setattr(llm_client, "get_settings", lambda: _settings(None))
+
+    digest = llm_client.prompt_sha256("triage_agent_v1")
+
+    assert len(digest) == 64
+    assert digest == llm_client.prompt_sha256("triage_agent_v1")
+
+
 def test_generate_triage_report_can_force_no_openai(monkeypatch) -> None:
     def fail_if_called(**_kwargs):
         raise AssertionError("OpenAI client should not be constructed")

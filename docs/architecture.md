@@ -38,7 +38,7 @@ flowchart TD
 4. Ask the configured OpenAI model for a structured `TriageReport`, or use deterministic fallback mode.
 5. Validate the report with Pydantic.
 6. Run final-output safety checks for destructive operational language.
-7. Persist an `AgentTrace` with tool calls, arguments, summaries, safety status, latency, and estimated cost.
+7. Persist an `AgentTrace` with tool calls, arguments, summaries, prompt hash, safety status, latency, and estimated cost.
 8. During evals, score each trace against expected severity, tools, likely causes, evidence, recommendations, and forbidden actions.
 
 ## Module Responsibilities
@@ -84,7 +84,7 @@ The main externally visible contracts are:
 - `IncidentInput`: input incident JSON.
 - `TriageReport`: final structured report.
 - `ToolCall`: trace record for each read-only tool invocation.
-- `AgentTrace`: full run artifact.
+- `AgentTrace`: full run artifact, including model, prompt version, and prompt SHA-256 fingerprint.
 - `EvalCase`: expected behavior for one eval scenario.
 - `EvalResult`: scored result with diagnostics.
 

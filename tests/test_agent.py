@@ -14,11 +14,14 @@ def test_run_agent_no_openai_saves_valid_trace() -> None:
     assert trace.final_report.severity == "SEV-2"
     assert trace.safety_check.safe
     assert not trace.used_openai
+    assert trace.prompt_sha256
+    assert len(trace.prompt_sha256) == 64
     assert trace_path.exists()
 
     payload = json.loads(trace_path.read_text(encoding="utf-8"))
     parsed = AgentTrace.model_validate(payload)
     assert parsed.trace_id == trace.trace_id
+    assert parsed.prompt_sha256 == trace.prompt_sha256
 
 
 def test_run_agent_uses_fixed_read_only_tool_order() -> None:

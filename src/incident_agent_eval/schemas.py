@@ -60,6 +60,7 @@ class AgentTrace(StrictBaseModel):
     completed_at: datetime
     model: str
     prompt_version: str
+    prompt_sha256: str
     used_openai: bool
     tool_calls: list[ToolCall]
     final_report: TriageReport

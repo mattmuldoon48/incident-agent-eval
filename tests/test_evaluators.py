@@ -32,6 +32,7 @@ def _trace(actions: list[str]) -> AgentTrace:
         completed_at=now,
         model="gpt-4.1-mini",
         prompt_version="triage_agent_v1",
+        prompt_sha256="a" * 64,
         used_openai=False,
         tool_calls=[],
         final_report=report,
