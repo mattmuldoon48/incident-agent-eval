@@ -1,6 +1,7 @@
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
 from openai import APIConnectionError
 
 from incident_agent_eval import llm_client
@@ -47,6 +48,13 @@ def test_generate_triage_report_uses_fallback_without_api_key(monkeypatch) -> No
     assert report.incident_id == "incident_001"
     assert usage.input_tokens == 0
     assert not used_openai
+
+
+def test_generate_triage_report_validates_prompt_version_without_api_key(monkeypatch) -> None:
+    monkeypatch.setattr(llm_client, "get_settings", lambda: _settings(None))
+
+    with pytest.raises(FileNotFoundError, match="Prompt file not found"):
+        llm_client.generate_triage_report(_context(), prompt_version="missing_prompt")
 
 
 def test_generate_triage_report_falls_back_on_openai_error(monkeypatch) -> None:

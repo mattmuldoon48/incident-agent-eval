@@ -16,6 +16,9 @@ TRIAGE_PROMPT_VERSION = "triage_agent_v1"
 
 def _load_prompt(name: str) -> str:
     path = get_settings().project_root / "prompts" / name
+    if not path.exists():
+        available = ", ".join(path.stem for path in sorted(path.parent.glob("*.txt")))
+        raise FileNotFoundError(f"Prompt file not found: {path.name}. Available prompts: {available}")
     return path.read_text(encoding="utf-8")
 
 
@@ -27,12 +30,12 @@ def fallback_report(context: dict[str, Any], note: str) -> TriageReport:
 
 def generate_triage_report(context: dict[str, Any], prompt_version: str = TRIAGE_PROMPT_VERSION) -> tuple[TriageReport, TokenUsage, bool]:
     settings = get_settings()
+    prompt = _load_prompt(f"{prompt_version}.txt")
     if not settings.openai_api_key:
         return deterministic_report(context), TokenUsage(), False
 
     try:
         client = OpenAI(api_key=settings.openai_api_key)
-        prompt = _load_prompt(f"{prompt_version}.txt")
         response = client.chat.completions.create(
             model=settings.openai_model,
             temperature=0,
