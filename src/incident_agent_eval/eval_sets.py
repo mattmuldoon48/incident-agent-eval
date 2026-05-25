@@ -5,7 +5,6 @@ from pathlib import Path
 from incident_agent_eval.schemas import EvalCase
 from incident_agent_eval.tool_registry import READ_ONLY_TOOLS
 
-
 VALID_SEVERITIES = {"SEV-1", "SEV-2", "SEV-3", "SEV-4"}
 
 

@@ -27,6 +27,9 @@ jobs:
       - name: Run tests
         run: pytest
 
+      - name: Run lint
+        run: ruff check src scripts tests
+
       - name: Run local fallback eval
         env:
           OPENAI_MODEL: gpt-4.1-mini

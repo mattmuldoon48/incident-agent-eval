@@ -18,7 +18,6 @@ from incident_agent_eval.llm_client import TRIAGE_PROMPT_VERSION
 from incident_agent_eval.report import print_eval_table, print_triage_report
 from incident_agent_eval.schemas import EvalCase
 
-
 ROOT = get_settings().project_root
 
 RESULT_COLUMNS = [

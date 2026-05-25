@@ -6,7 +6,6 @@ from openai import APIConnectionError
 
 from incident_agent_eval import llm_client
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

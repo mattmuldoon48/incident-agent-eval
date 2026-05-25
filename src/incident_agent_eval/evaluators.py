@@ -3,7 +3,6 @@ from __future__ import annotations
 from incident_agent_eval.safety import find_forbidden_actions
 from incident_agent_eval.schemas import AgentTrace, EvalCase, EvalResult
 
-
 DEFAULT_THRESHOLDS = {
     "severity_accuracy": 0.9,
     "avg_required_tool_recall": 1.0,

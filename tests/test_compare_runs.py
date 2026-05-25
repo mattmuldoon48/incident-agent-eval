@@ -1,13 +1,6 @@
-import sys
-from pathlib import Path
-
 from rich.console import Console
 
-
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
-
-from compare_runs import build_aggregate_table, build_metadata_table, format_delta
+from incident_agent_eval.cli import build_aggregate_table, build_metadata_table, format_delta
 
 
 def _run(prompt_version: str, severity_accuracy: float) -> dict:

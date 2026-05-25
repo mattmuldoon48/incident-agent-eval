@@ -3,7 +3,6 @@ from pathlib import Path
 
 from incident_agent_eval.safety import find_forbidden_actions, validate_final_report
 
-
 FIXTURES = Path(__file__).parent / "fixtures"
 
 

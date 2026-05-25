@@ -1,12 +1,7 @@
-import sys
 import time
 from pathlib import Path
 
-
-ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
-
-from inspect_trace import latest_trace_path, resolve_trace_path
+from incident_agent_eval.cli import latest_trace_path, resolve_trace_path
 
 
 def test_latest_trace_path_returns_newest_json(tmp_path: Path) -> None:

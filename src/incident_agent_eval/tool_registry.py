@@ -1,6 +1,5 @@
 from incident_agent_eval import tools
 
-
 READ_ONLY_TOOLS = {
     "get_service_metrics": tools.get_service_metrics,
     "search_logs": tools.search_logs,

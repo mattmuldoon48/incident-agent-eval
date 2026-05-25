@@ -10,7 +10,6 @@ from incident_agent_eval.config import get_settings
 from incident_agent_eval.cost import TokenUsage, estimate_cost_usd
 from incident_agent_eval.schemas import TriageReport
 
-
 TRIAGE_PROMPT_VERSION = "triage_agent_v1"
 
 

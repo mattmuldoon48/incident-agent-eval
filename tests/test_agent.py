@@ -4,7 +4,6 @@ from pathlib import Path
 from incident_agent_eval.agent import run_agent
 from incident_agent_eval.schemas import AgentTrace
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 

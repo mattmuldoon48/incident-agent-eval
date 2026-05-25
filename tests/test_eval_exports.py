@@ -1,12 +1,9 @@
 import csv
-import sys
 from pathlib import Path
 
+from incident_agent_eval.cli import display_path, write_csv_report, write_markdown_report
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "scripts"))
-
-from run_eval import display_path, write_csv_report, write_markdown_report
 
 
 def _payload() -> dict:

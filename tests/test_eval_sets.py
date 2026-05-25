@@ -5,7 +5,6 @@ import pytest
 from incident_agent_eval.eval_sets import load_and_validate_eval_cases, validate_eval_cases
 from incident_agent_eval.schemas import EvalCase
 
-
 ROOT = Path(__file__).resolve().parents[1]
 
 
