@@ -30,4 +30,4 @@ jobs:
       - name: Run local fallback eval
         env:
           OPENAI_MODEL: gpt-4.1-mini
-        run: python scripts/run_eval.py --no-openai --fail-on-regression
+        run: incident-eval --no-openai --fail-on-regression
