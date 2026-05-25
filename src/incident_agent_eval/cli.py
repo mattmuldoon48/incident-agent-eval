@@ -12,10 +12,10 @@ from rich.table import Table
 
 from incident_agent_eval.agent import run_agent
 from incident_agent_eval.config import get_settings
+from incident_agent_eval.eval_sets import load_and_validate_eval_cases
 from incident_agent_eval.evaluators import DEFAULT_THRESHOLDS, aggregate_results, evaluate_thresholds, score_trace
 from incident_agent_eval.llm_client import TRIAGE_PROMPT_VERSION
 from incident_agent_eval.report import print_eval_table, print_triage_report
-from incident_agent_eval.schemas import EvalCase
 
 
 ROOT = get_settings().project_root
@@ -144,7 +144,7 @@ def run_eval_main() -> None:
     eval_path = Path(args.eval_set)
     if not eval_path.is_absolute():
         eval_path = ROOT / eval_path
-    cases = [EvalCase.model_validate_json(line) for line in eval_path.read_text(encoding="utf-8").splitlines() if line.strip()]
+    cases = load_and_validate_eval_cases(eval_path, ROOT)
     results = []
     trace_paths = []
     models = set()

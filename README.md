@@ -73,6 +73,8 @@ The eval runner executes each incident case, saves traces, and scores the five-c
 - latency
 - estimated cost
 
+Eval sets are validated before execution for missing incident files, duplicate case IDs, unknown required tools, malformed severities, and empty expected outputs.
+
 See [`docs/eval_snapshot.md`](docs/eval_snapshot.md) for a committed snapshot of one OpenAI-backed eval run.
 For a reviewer-friendly narrative, see [`docs/project_walkthrough.md`](docs/project_walkthrough.md).
 
