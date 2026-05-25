@@ -19,13 +19,13 @@ def _load_prompt(name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def generate_triage_report(context: dict[str, Any]) -> tuple[TriageReport, TokenUsage, bool]:
+def generate_triage_report(context: dict[str, Any], prompt_version: str = TRIAGE_PROMPT_VERSION) -> tuple[TriageReport, TokenUsage, bool]:
     settings = get_settings()
     if not settings.openai_api_key:
         return deterministic_report(context), TokenUsage(), False
 
     client = OpenAI(api_key=settings.openai_api_key)
-    prompt = _load_prompt(f"{TRIAGE_PROMPT_VERSION}.txt")
+    prompt = _load_prompt(f"{prompt_version}.txt")
     response = client.chat.completions.create(
         model=settings.openai_model,
         temperature=0,

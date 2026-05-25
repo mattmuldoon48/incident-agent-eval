@@ -92,6 +92,14 @@ To fail the command when aggregate metrics miss the regression thresholds:
 python scripts/run_eval.py --fail-on-regression
 ```
 
+To compare prompt versions:
+
+```bash
+python scripts/run_eval.py --prompt-version triage_agent_v1
+python scripts/run_eval.py --prompt-version triage_agent_v2
+python scripts/compare_runs.py reports/eval_runs/run_a.json reports/eval_runs/run_b.json
+```
+
 Default thresholds:
 
 - severity accuracy >= 0.90

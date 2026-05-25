@@ -47,7 +47,7 @@ def _call_tool(tool_name: str, func: Callable[..., Any], **kwargs: Any) -> tuple
         )
 
 
-def run_agent(incident_path: str | Path) -> tuple[AgentTrace, Path]:
+def run_agent(incident_path: str | Path, prompt_version: str = TRIAGE_PROMPT_VERSION) -> tuple[AgentTrace, Path]:
     assert_read_only_registry()
     settings = get_settings()
     started = utc_now()
@@ -91,7 +91,7 @@ def run_agent(incident_path: str | Path) -> tuple[AgentTrace, Path]:
             "severity": severity or {"severity": "SEV-4", "explanation": "Severity classifier failed."},
             "tools_used": [call.tool_name for call in tool_calls if call.success],
         }
-        report, usage, used_openai = generate_triage_report(context)
+        report, usage, used_openai = generate_triage_report(context, prompt_version=prompt_version)
         safety_result = validate_final_report(report.model_dump())
         if not safety_result["safe"]:
             report.safety_notes.append(f"Safety checker flagged forbidden actions: {safety_result['violations']}")
@@ -103,7 +103,7 @@ def run_agent(incident_path: str | Path) -> tuple[AgentTrace, Path]:
         started_at=started,
         completed_at=completed,
         model=settings.openai_model,
-        prompt_version=TRIAGE_PROMPT_VERSION,
+        prompt_version=prompt_version,
         used_openai=used_openai,
         tool_calls=tool_calls,
         final_report=report,

@@ -28,6 +28,11 @@ def parse_args() -> argparse.Namespace:
         action="store_true",
         help="Exit nonzero if aggregate metrics miss the configured quality thresholds.",
     )
+    parser.add_argument(
+        "--prompt-version",
+        default=TRIAGE_PROMPT_VERSION,
+        help="Prompt file stem from prompts/, for example triage_agent_v1.",
+    )
     return parser.parse_args()
 
 
@@ -42,7 +47,7 @@ def main() -> None:
     models = set()
     used_openai = False
     for case in cases:
-        trace, trace_path = run_agent(ROOT / case.incident_file)
+        trace, trace_path = run_agent(ROOT / case.incident_file, prompt_version=args.prompt_version)
         results.append(score_trace(case, trace))
         trace_paths.append(str(trace_path))
         models.add(trace.model)
@@ -50,7 +55,7 @@ def main() -> None:
 
     aggregate = aggregate_results(results)
     threshold_result = evaluate_thresholds(aggregate, DEFAULT_THRESHOLDS)
-    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    timestamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ")
     output_path = ROOT / f"reports/eval_runs/{timestamp}.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
@@ -61,7 +66,7 @@ def main() -> None:
         "trace_paths": trace_paths,
         "eval_set": str(eval_path),
         "model": ", ".join(sorted(models)),
-        "prompt_version": TRIAGE_PROMPT_VERSION,
+        "prompt_version": args.prompt_version,
         "used_openai": used_openai,
     }
     output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
