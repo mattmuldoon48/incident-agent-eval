@@ -79,6 +79,7 @@ Eval sets are validated before execution for missing incident files, duplicate c
 
 See [`docs/eval_snapshot.md`](docs/eval_snapshot.md) for a committed snapshot of one OpenAI-backed eval run.
 For a reviewer-friendly narrative, see [`docs/project_walkthrough.md`](docs/project_walkthrough.md).
+For a concise presentation flow, see [`docs/demo_script.md`](docs/demo_script.md).
 
 ## Setup
 
