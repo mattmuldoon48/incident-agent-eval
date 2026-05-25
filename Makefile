@@ -30,7 +30,11 @@ agent:
 	$(PYTHON) scripts/run_agent.py $(INCIDENT)
 
 trace:
-	$(PYTHON) scripts/inspect_trace.py $(TRACE)
+	@if [ -n "$(TRACE)" ]; then \
+		$(PYTHON) scripts/inspect_trace.py $(TRACE); \
+	else \
+		$(PYTHON) scripts/inspect_trace.py --latest; \
+	fi
 
 compare:
 	$(PYTHON) scripts/compare_runs.py $(RUN_A) $(RUN_B)

@@ -145,6 +145,7 @@ Default thresholds:
 
 ```bash
 python scripts/inspect_trace.py reports/traces/some_trace.json
+python scripts/inspect_trace.py --latest
 ```
 
 ## Compare Eval Runs
