@@ -28,10 +28,14 @@ def fallback_report(context: dict[str, Any], note: str) -> TriageReport:
     return report
 
 
-def generate_triage_report(context: dict[str, Any], prompt_version: str = TRIAGE_PROMPT_VERSION) -> tuple[TriageReport, TokenUsage, bool]:
+def generate_triage_report(
+    context: dict[str, Any],
+    prompt_version: str = TRIAGE_PROMPT_VERSION,
+    use_openai: bool = True,
+) -> tuple[TriageReport, TokenUsage, bool]:
     settings = get_settings()
     prompt = _load_prompt(f"{prompt_version}.txt")
-    if not settings.openai_api_key:
+    if not use_openai or not settings.openai_api_key:
         return deterministic_report(context), TokenUsage(), False
 
     try:

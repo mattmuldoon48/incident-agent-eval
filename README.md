@@ -126,6 +126,13 @@ To fail the command when aggregate metrics miss the regression thresholds:
 python scripts/run_eval.py --fail-on-regression
 ```
 
+To force the deterministic fallback path even when `.env` has an API key:
+
+```bash
+python scripts/run_eval.py --no-openai --fail-on-regression
+python scripts/run_agent.py data/incidents/incident_001.json --no-openai
+```
+
 To compare prompt versions:
 
 ```bash

@@ -18,7 +18,7 @@ eval:
 	$(PYTHON) scripts/run_eval.py
 
 eval-strict:
-	OPENAI_API_KEY= $(PYTHON) scripts/run_eval.py --fail-on-regression
+	$(PYTHON) scripts/run_eval.py --no-openai --fail-on-regression
 
 eval-v1:
 	$(PYTHON) scripts/run_eval.py --prompt-version triage_agent_v1

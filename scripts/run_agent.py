@@ -20,12 +20,17 @@ def parse_args() -> argparse.Namespace:
         default=TRIAGE_PROMPT_VERSION,
         help="Prompt file stem from prompts/, for example triage_agent_v1.",
     )
+    parser.add_argument(
+        "--no-openai",
+        action="store_true",
+        help="Force deterministic fallback generation even when OPENAI_API_KEY is set.",
+    )
     return parser.parse_args()
 
 
 def main() -> None:
     args = parse_args()
-    trace, trace_path = run_agent(args.incident_file, prompt_version=args.prompt_version)
+    trace, trace_path = run_agent(args.incident_file, prompt_version=args.prompt_version, use_openai=not args.no_openai)
     print_triage_report(trace, str(trace_path))
 
 

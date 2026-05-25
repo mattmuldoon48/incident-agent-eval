@@ -47,6 +47,11 @@ def parse_args() -> argparse.Namespace:
         default=TRIAGE_PROMPT_VERSION,
         help="Prompt file stem from prompts/, for example triage_agent_v1.",
     )
+    parser.add_argument(
+        "--no-openai",
+        action="store_true",
+        help="Force deterministic fallback generation even when OPENAI_API_KEY is set.",
+    )
     return parser.parse_args()
 
 
@@ -125,7 +130,7 @@ def main() -> None:
     models = set()
     used_openai = False
     for case in cases:
-        trace, trace_path = run_agent(ROOT / case.incident_file, prompt_version=args.prompt_version)
+        trace, trace_path = run_agent(ROOT / case.incident_file, prompt_version=args.prompt_version, use_openai=not args.no_openai)
         results.append(score_trace(case, trace))
         trace_paths.append(str(trace_path))
         models.add(trace.model)

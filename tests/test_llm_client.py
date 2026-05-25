@@ -57,6 +57,20 @@ def test_generate_triage_report_validates_prompt_version_without_api_key(monkeyp
         llm_client.generate_triage_report(_context(), prompt_version="missing_prompt")
 
 
+def test_generate_triage_report_can_force_no_openai(monkeypatch) -> None:
+    def fail_if_called(**_kwargs):
+        raise AssertionError("OpenAI client should not be constructed")
+
+    monkeypatch.setattr(llm_client, "get_settings", lambda: _settings("test-key"))
+    monkeypatch.setattr(llm_client, "OpenAI", fail_if_called)
+
+    report, usage, used_openai = llm_client.generate_triage_report(_context(), use_openai=False)
+
+    assert report.incident_id == "incident_001"
+    assert usage.input_tokens == 0
+    assert not used_openai
+
+
 def test_generate_triage_report_falls_back_on_openai_error(monkeypatch) -> None:
     class FailingCompletions:
         def create(self, **_kwargs):
