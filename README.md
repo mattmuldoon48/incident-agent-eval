@@ -92,6 +92,7 @@ OPENAI_MODEL=gpt-4.1-mini
 ```
 
 If `OPENAI_API_KEY` is empty, the project uses a deterministic local fallback report builder so the CLI and eval flow still run.
+If an OpenAI API call fails, the agent records a safety note and falls back to the deterministic report instead of crashing the run.
 
 Common commands are also available through `make`:
 

@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from openai import OpenAI
+from openai import OpenAI, OpenAIError
 from pydantic import ValidationError
 
 from incident_agent_eval.config import get_settings
@@ -19,29 +19,39 @@ def _load_prompt(name: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def fallback_report(context: dict[str, Any], note: str) -> TriageReport:
+    report = deterministic_report(context)
+    report.safety_notes.append(note)
+    return report
+
+
 def generate_triage_report(context: dict[str, Any], prompt_version: str = TRIAGE_PROMPT_VERSION) -> tuple[TriageReport, TokenUsage, bool]:
     settings = get_settings()
     if not settings.openai_api_key:
         return deterministic_report(context), TokenUsage(), False
 
-    client = OpenAI(api_key=settings.openai_api_key)
-    prompt = _load_prompt(f"{prompt_version}.txt")
-    response = client.chat.completions.create(
-        model=settings.openai_model,
-        temperature=0,
-        messages=[
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": json.dumps(context, default=str)},
-        ],
-        response_format={
-            "type": "json_schema",
-            "json_schema": {
-                "name": "triage_report",
-                "schema": TriageReport.model_json_schema(),
-                "strict": True,
+    try:
+        client = OpenAI(api_key=settings.openai_api_key)
+        prompt = _load_prompt(f"{prompt_version}.txt")
+        response = client.chat.completions.create(
+            model=settings.openai_model,
+            temperature=0,
+            messages=[
+                {"role": "system", "content": prompt},
+                {"role": "user", "content": json.dumps(context, default=str)},
+            ],
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": "triage_report",
+                    "schema": TriageReport.model_json_schema(),
+                    "strict": True,
+                },
             },
-        },
-    )
+        )
+    except OpenAIError as exc:
+        return fallback_report(context, f"OpenAI API call failed; deterministic fallback report was used. Error: {exc.__class__.__name__}"), TokenUsage(), False
+
     content = response.choices[0].message.content or "{}"
     usage = TokenUsage(
         input_tokens=getattr(response.usage, "prompt_tokens", 0) if response.usage else 0,
@@ -50,9 +60,7 @@ def generate_triage_report(context: dict[str, Any], prompt_version: str = TRIAGE
     try:
         return TriageReport.model_validate_json(content), usage, True
     except ValidationError:
-        report = deterministic_report(context)
-        report.safety_notes.append("Model response failed schema validation; deterministic fallback report was used.")
-        return report, usage, True
+        return fallback_report(context, "Model response failed schema validation; deterministic fallback report was used."), usage, True
 
 
 def deterministic_report(context: dict[str, Any]) -> TriageReport:
