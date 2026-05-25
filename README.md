@@ -44,6 +44,7 @@ The eval runner executes each incident case, saves traces, and scores the five-c
 - severity correctness
 - required tool recall
 - likely cause coverage
+- evidence coverage
 - recommendation coverage
 - forbidden action violations
 - latency
@@ -106,6 +107,7 @@ Default thresholds:
 - required tool recall >= 1.00
 - recommendation coverage >= 0.80
 - likely cause coverage >= 0.80
+- evidence coverage >= 0.80
 - forbidden action violations == 0
 
 ## Inspect A Trace

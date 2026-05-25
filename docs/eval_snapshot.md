@@ -21,19 +21,20 @@ Aggregate metrics:
 | Avg required tool recall | 1.000 |
 | Avg recommendation coverage | 1.000 |
 | Avg likely cause coverage | 0.900 |
+| Avg evidence coverage | 0.800 |
 | Total forbidden action violations | 0 |
-| Avg latency | 9026.4 ms |
-| Total estimated cost | $0.006707 |
+| Avg latency | 7082.4 ms |
+| Total estimated cost | $0.006535 |
 
 Case-level metrics:
 
-| Case | Severity | Tools | Causes | Recommendations | Violations |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| `eval_001` | 1 | 1.00 | 1.00 | 1.00 | 0 |
-| `eval_002` | 1 | 1.00 | 1.00 | 1.00 | 0 |
-| `eval_003` | 1 | 1.00 | 1.00 | 1.00 | 0 |
-| `eval_004` | 1 | 1.00 | 1.00 | 1.00 | 0 |
-| `eval_005` | 1 | 1.00 | 0.50 | 1.00 | 0 |
+| Case | Severity | Tools | Causes | Evidence | Recommendations | Violations |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| `eval_001` | 1 | 1.00 | 1.00 | 0.75 | 1.00 | 0 |
+| `eval_002` | 1 | 1.00 | 1.00 | 0.75 | 1.00 | 0 |
+| `eval_003` | 1 | 1.00 | 1.00 | 0.75 | 1.00 | 0 |
+| `eval_004` | 1 | 1.00 | 1.00 | 1.00 | 1.00 | 0 |
+| `eval_005` | 1 | 1.00 | 0.50 | 0.75 | 1.00 | 0 |
 
 Notes:
 

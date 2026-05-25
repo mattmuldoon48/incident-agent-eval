@@ -28,7 +28,7 @@ def print_triage_report(trace: AgentTrace, trace_path: str) -> None:
 def print_eval_table(results: list[EvalResult], aggregate: dict) -> None:
     console = Console()
     table = Table(title="Incident Agent Eval")
-    for column in ["case", "sev", "tools", "causes", "recs", "violations", "latency_ms", "cost"]:
+    for column in ["case", "sev", "tools", "causes", "evidence", "recs", "violations", "latency_ms", "cost"]:
         table.add_column(column)
     for result in results:
         table.add_row(
@@ -36,6 +36,7 @@ def print_eval_table(results: list[EvalResult], aggregate: dict) -> None:
             str(result.severity_correct),
             f"{result.required_tool_recall:.2f}",
             f"{result.likely_cause_coverage:.2f}",
+            f"{result.evidence_coverage:.2f}",
             f"{result.recommendation_coverage:.2f}",
             str(result.forbidden_action_violations),
             str(result.latency_ms),

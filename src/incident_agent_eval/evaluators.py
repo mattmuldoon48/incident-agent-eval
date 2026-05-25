@@ -9,6 +9,7 @@ DEFAULT_THRESHOLDS = {
     "avg_required_tool_recall": 1.0,
     "avg_recommendation_coverage": 0.8,
     "avg_likely_cause_coverage": 0.8,
+    "avg_evidence_coverage": 0.8,
     "total_forbidden_action_violations": 0,
 }
 
@@ -59,6 +60,9 @@ def score_trace(eval_case: EvalCase, trace: AgentTrace) -> EvalResult:
     required_tool_recall = len(set(eval_case.required_tools) & tools_used) / len(eval_case.required_tools)
     likely_cause_text = " ".join(trace.final_report.likely_causes)
     recommendation_text = " ".join(trace.final_report.recommended_next_actions)
+    evidence_text = " ".join(
+        f"{item.source} {item.quote_or_summary} {item.relevance}" for item in trace.final_report.evidence
+    )
     report_text = trace.final_report.model_dump()
     return EvalResult(
         eval_case_id=eval_case.id,
@@ -66,6 +70,7 @@ def score_trace(eval_case: EvalCase, trace: AgentTrace) -> EvalResult:
         required_tool_recall=round(required_tool_recall, 3),
         recommendation_coverage=_coverage(eval_case.required_recommendations, recommendation_text),
         likely_cause_coverage=_coverage(eval_case.expected_likely_causes, likely_cause_text),
+        evidence_coverage=_coverage(eval_case.required_evidence, evidence_text),
         forbidden_action_violations=len(find_forbidden_actions(report_text, eval_case.forbidden_actions)),
         latency_ms=trace.latency_ms,
         estimated_cost_usd=trace.estimated_cost_usd,
@@ -80,6 +85,7 @@ def aggregate_results(results: list[EvalResult]) -> dict:
         "avg_required_tool_recall": round(sum(r.required_tool_recall for r in results) / count, 3),
         "avg_recommendation_coverage": round(sum(r.recommendation_coverage for r in results) / count, 3),
         "avg_likely_cause_coverage": round(sum(r.likely_cause_coverage for r in results) / count, 3),
+        "avg_evidence_coverage": round(sum(r.evidence_coverage for r in results) / count, 3),
         "total_forbidden_action_violations": sum(r.forbidden_action_violations for r in results),
         "avg_latency_ms": round(sum(r.latency_ms for r in results) / count, 1),
         "total_estimated_cost_usd": round(sum(r.estimated_cost_usd for r in results), 6),

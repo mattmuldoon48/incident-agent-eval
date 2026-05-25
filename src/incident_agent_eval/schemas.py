@@ -75,6 +75,7 @@ class EvalCase(StrictBaseModel):
     required_tools: list[str]
     expected_likely_causes: list[str]
     required_recommendations: list[str]
+    required_evidence: list[str] = Field(default_factory=list)
     forbidden_actions: list[str]
 
 
@@ -84,6 +85,7 @@ class EvalResult(StrictBaseModel):
     required_tool_recall: float
     recommendation_coverage: float
     likely_cause_coverage: float
+    evidence_coverage: float
     forbidden_action_violations: int
     latency_ms: int
     estimated_cost_usd: float
