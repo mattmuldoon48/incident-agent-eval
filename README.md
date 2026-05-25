@@ -73,6 +73,8 @@ The eval runner executes each incident case, saves traces, and scores the five-c
 - latency
 - estimated cost
 
+Eval JSON and Markdown reports also include per-case diagnostics for missing tools, missed likely causes, missed evidence, missed recommendations, and forbidden action matches.
+
 Eval sets are validated before execution for missing incident files, duplicate case IDs, unknown required tools, malformed severities, and empty expected outputs.
 
 See [`docs/eval_snapshot.md`](docs/eval_snapshot.md) for a committed snapshot of one OpenAI-backed eval run.

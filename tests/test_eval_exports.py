@@ -18,6 +18,14 @@ def _payload() -> dict:
                 "evidence_coverage": 0.75,
                 "recommendation_coverage": 1.0,
                 "forbidden_action_violations": 0,
+                "missing_required_tools": [],
+                "matched_likely_causes": ["deploy regression"],
+                "missed_likely_causes": ["database timeout"],
+                "matched_recommendations": ["page owner"],
+                "missed_recommendations": [],
+                "matched_evidence": ["metrics 5xx"],
+                "missed_evidence": ["deploy event"],
+                "forbidden_action_matches": [],
                 "latency_ms": 123,
                 "estimated_cost_usd": 0.001,
             }
@@ -61,6 +69,8 @@ def test_write_markdown_report(tmp_path: Path) -> None:
     assert "| eval_test |" not in text
     assert "`eval_test`" in text
     assert "avg_evidence_coverage" in text
+    assert "## Case Diagnostics" in text
+    assert "database timeout" in text
 
 
 def test_display_path_uses_relative_project_paths() -> None:

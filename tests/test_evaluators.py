@@ -54,6 +54,9 @@ def test_required_tool_recall() -> None:
     )
     result = score_trace(case, _trace(["Page the owner"]))
     assert result.required_tool_recall == 0.5
+    assert result.missing_required_tools == ["get_recent_deploys", "get_service_owner"]
+    assert result.matched_likely_causes == ["recent deployment regression"]
+    assert result.missed_evidence == []
 
 
 def test_forbidden_action_violations() -> None:
@@ -69,6 +72,7 @@ def test_forbidden_action_violations() -> None:
     )
     result = score_trace(case, _trace(["restart the pods now"]))
     assert result.forbidden_action_violations >= 1
+    assert "restart the pods now" in result.forbidden_action_matches
 
 
 def test_thresholds_pass_when_metrics_meet_bar() -> None:

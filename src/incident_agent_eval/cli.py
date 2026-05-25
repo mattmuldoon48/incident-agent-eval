@@ -28,6 +28,11 @@ RESULT_COLUMNS = [
     "evidence_coverage",
     "recommendation_coverage",
     "forbidden_action_violations",
+    "missing_required_tools",
+    "missed_likely_causes",
+    "missed_evidence",
+    "missed_recommendations",
+    "forbidden_action_matches",
     "latency_ms",
     "estimated_cost_usd",
 ]
@@ -47,7 +52,13 @@ def write_csv_report(path: Path, payload: dict) -> None:
         writer = csv.DictWriter(handle, fieldnames=RESULT_COLUMNS)
         writer.writeheader()
         for row in payload["results"]:
-            writer.writerow({column: row[column] for column in RESULT_COLUMNS})
+            writer.writerow({column: _csv_value(row.get(column, [])) for column in RESULT_COLUMNS})
+
+
+def _csv_value(value: Any) -> str | int | float:
+    if isinstance(value, list | dict):
+        return json.dumps(value)
+    return value
 
 
 def write_markdown_report(path: Path, payload: dict) -> None:
@@ -95,6 +106,20 @@ def write_markdown_report(path: Path, payload: dict) -> None:
                 ]
             )
             + " |"
+        )
+    lines.extend(["", "## Case Diagnostics", ""])
+    for row in payload["results"]:
+        lines.extend(
+            [
+                f"### `{row['eval_case_id']}`",
+                "",
+                f"- Missing tools: `{', '.join(row['missing_required_tools']) or 'none'}`",
+                f"- Missed likely causes: `{', '.join(row['missed_likely_causes']) or 'none'}`",
+                f"- Missed evidence: `{', '.join(row['missed_evidence']) or 'none'}`",
+                f"- Missed recommendations: `{', '.join(row['missed_recommendations']) or 'none'}`",
+                f"- Forbidden matches: `{', '.join(row['forbidden_action_matches']) or 'none'}`",
+                "",
+            ]
         )
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 

@@ -54,23 +54,52 @@ def _coverage(expected: list[str], actual_text: str) -> float:
     return round(hits / len(expected), 3)
 
 
+def _matched_and_missed(expected: list[str], actual_text: str) -> tuple[list[str], list[str]]:
+    matched = [item for item in expected if _mentions(item, actual_text)]
+    missed = [item for item in expected if item not in matched]
+    return matched, missed
+
+
 def score_trace(eval_case: EvalCase, trace: AgentTrace) -> EvalResult:
     tools_used = set(trace.final_report.tools_used)
-    required_tool_recall = len(set(eval_case.required_tools) & tools_used) / len(eval_case.required_tools)
+    required_tools = set(eval_case.required_tools)
+    required_tool_recall = len(required_tools & tools_used) / len(eval_case.required_tools)
     likely_cause_text = " ".join(trace.final_report.likely_causes)
     recommendation_text = " ".join(trace.final_report.recommended_next_actions)
     evidence_text = " ".join(
         f"{item.source} {item.quote_or_summary} {item.relevance}" for item in trace.final_report.evidence
     )
     report_text = trace.final_report.model_dump()
+    matched_likely_causes, missed_likely_causes = _matched_and_missed(
+        eval_case.expected_likely_causes, likely_cause_text
+    )
+    matched_recommendations, missed_recommendations = _matched_and_missed(
+        eval_case.required_recommendations, recommendation_text
+    )
+    matched_evidence, missed_evidence = _matched_and_missed(eval_case.required_evidence, evidence_text)
+    forbidden_matches = find_forbidden_actions(report_text, eval_case.forbidden_actions)
     return EvalResult(
         eval_case_id=eval_case.id,
         severity_correct=int(trace.final_report.severity == eval_case.expected_severity),
         required_tool_recall=round(required_tool_recall, 3),
-        recommendation_coverage=_coverage(eval_case.required_recommendations, recommendation_text),
-        likely_cause_coverage=_coverage(eval_case.expected_likely_causes, likely_cause_text),
-        evidence_coverage=_coverage(eval_case.required_evidence, evidence_text),
-        forbidden_action_violations=len(find_forbidden_actions(report_text, eval_case.forbidden_actions)),
+        recommendation_coverage=round(len(matched_recommendations) / len(eval_case.required_recommendations), 3)
+        if eval_case.required_recommendations
+        else 1.0,
+        likely_cause_coverage=round(len(matched_likely_causes) / len(eval_case.expected_likely_causes), 3)
+        if eval_case.expected_likely_causes
+        else 1.0,
+        evidence_coverage=round(len(matched_evidence) / len(eval_case.required_evidence), 3)
+        if eval_case.required_evidence
+        else 1.0,
+        forbidden_action_violations=len(forbidden_matches),
+        missing_required_tools=sorted(required_tools - tools_used),
+        matched_likely_causes=matched_likely_causes,
+        missed_likely_causes=missed_likely_causes,
+        matched_recommendations=matched_recommendations,
+        missed_recommendations=missed_recommendations,
+        matched_evidence=matched_evidence,
+        missed_evidence=missed_evidence,
+        forbidden_action_matches=forbidden_matches,
         latency_ms=trace.latency_ms,
         estimated_cost_usd=trace.estimated_cost_usd,
     )

@@ -87,5 +87,13 @@ class EvalResult(StrictBaseModel):
     likely_cause_coverage: float
     evidence_coverage: float
     forbidden_action_violations: int
+    missing_required_tools: list[str] = Field(default_factory=list)
+    matched_likely_causes: list[str] = Field(default_factory=list)
+    missed_likely_causes: list[str] = Field(default_factory=list)
+    matched_recommendations: list[str] = Field(default_factory=list)
+    missed_recommendations: list[str] = Field(default_factory=list)
+    matched_evidence: list[str] = Field(default_factory=list)
+    missed_evidence: list[str] = Field(default_factory=list)
+    forbidden_action_matches: list[str] = Field(default_factory=list)
     latency_ms: int
     estimated_cost_usd: float
