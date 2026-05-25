@@ -136,6 +136,12 @@ To fail the command when aggregate metrics miss the regression thresholds:
 python scripts/run_eval.py --fail-on-regression
 ```
 
+To validate eval-set definitions without running the agent:
+
+```bash
+python scripts/run_eval.py --validate-only
+```
+
 To force the deterministic fallback path even when `.env` has an API key:
 
 ```bash

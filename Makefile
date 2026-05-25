@@ -1,4 +1,4 @@
-.PHONY: setup test eval eval-strict eval-v1 eval-v2 agent trace compare
+.PHONY: setup test validate-eval eval eval-strict eval-v1 eval-v2 agent trace compare
 
 PYTHON ?= python3.11
 INCIDENT ?= data/incidents/incident_001.json
@@ -13,6 +13,9 @@ setup:
 
 test:
 	$(PYTHON) -m pytest
+
+validate-eval:
+	$(PYTHON) scripts/run_eval.py --validate-only
 
 eval:
 	$(PYTHON) scripts/run_eval.py

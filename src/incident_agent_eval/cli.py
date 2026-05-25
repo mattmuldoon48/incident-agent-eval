@@ -139,12 +139,21 @@ def run_eval_main() -> None:
         action="store_true",
         help="Force deterministic fallback generation even when OPENAI_API_KEY is set.",
     )
+    parser.add_argument(
+        "--validate-only",
+        action="store_true",
+        help="Validate the eval set and exit without running the agent.",
+    )
     args = parser.parse_args()
 
     eval_path = Path(args.eval_set)
     if not eval_path.is_absolute():
         eval_path = ROOT / eval_path
     cases = load_and_validate_eval_cases(eval_path, ROOT)
+    if args.validate_only:
+        print(f"Eval set valid: {display_path(eval_path)} ({len(cases)} cases)")
+        return
+
     results = []
     trace_paths = []
     models = set()

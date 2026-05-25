@@ -8,6 +8,7 @@ Run the deterministic local path first:
 
 ```bash
 make test
+make validate-eval
 make eval-strict
 make agent INCIDENT=data/incidents/incident_001.json
 make trace
