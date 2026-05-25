@@ -84,7 +84,7 @@ The main externally visible contracts are:
 - `IncidentInput`: input incident JSON.
 - `TriageReport`: final structured report.
 - `ToolCall`: trace record for each read-only tool invocation.
-- `AgentTrace`: full run artifact, including model, prompt version, and prompt SHA-256 fingerprint.
+- `AgentTrace`: full run artifact, including schema version, model, prompt version, and prompt SHA-256 fingerprint.
 - `EvalCase`: expected behavior for one eval scenario.
 - `EvalResult`: scored result with diagnostics.
 

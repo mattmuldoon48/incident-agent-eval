@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 
 from incident_agent_eval.evaluators import evaluate_thresholds, score_trace
-from incident_agent_eval.schemas import AgentTrace, EvalCase, TriageReport
+from incident_agent_eval.schemas import TRACE_SCHEMA_VERSION, AgentTrace, EvalCase, TriageReport
 
 
 def _trace(actions: list[str]) -> AgentTrace:
@@ -26,6 +26,7 @@ def _trace(actions: list[str]) -> AgentTrace:
     )
     now = datetime.now(timezone.utc)
     return AgentTrace(
+        schema_version=TRACE_SCHEMA_VERSION,
         trace_id="trace",
         incident_id="incident_test",
         started_at=now,

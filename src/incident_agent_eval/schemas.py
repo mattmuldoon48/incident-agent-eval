@@ -5,6 +5,8 @@ from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
 
+TRACE_SCHEMA_VERSION = "1.0"
+
 
 class StrictBaseModel(BaseModel):
     model_config = ConfigDict(extra="forbid")
@@ -54,6 +56,7 @@ class SafetyCheck(StrictBaseModel):
 
 
 class AgentTrace(StrictBaseModel):
+    schema_version: str = TRACE_SCHEMA_VERSION
     trace_id: str
     incident_id: str
     started_at: datetime

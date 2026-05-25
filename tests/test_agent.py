@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 
 from incident_agent_eval.agent import run_agent
-from incident_agent_eval.schemas import AgentTrace
+from incident_agent_eval.schemas import TRACE_SCHEMA_VERSION, AgentTrace
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -14,6 +14,7 @@ def test_run_agent_no_openai_saves_valid_trace() -> None:
     assert trace.final_report.severity == "SEV-2"
     assert trace.safety_check.safe
     assert not trace.used_openai
+    assert trace.schema_version == TRACE_SCHEMA_VERSION
     assert trace.prompt_sha256
     assert len(trace.prompt_sha256) == 64
     assert trace_path.exists()
@@ -21,6 +22,7 @@ def test_run_agent_no_openai_saves_valid_trace() -> None:
     payload = json.loads(trace_path.read_text(encoding="utf-8"))
     parsed = AgentTrace.model_validate(payload)
     assert parsed.trace_id == trace.trace_id
+    assert parsed.schema_version == TRACE_SCHEMA_VERSION
     assert parsed.prompt_sha256 == trace.prompt_sha256
 
 

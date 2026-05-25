@@ -440,7 +440,8 @@ def print_trace(payload: dict) -> None:
     report = payload["final_report"]
     console.print(f"[bold]{report['service']}[/bold] {report['severity']}: {report['severity_rationale']}")
     console.print(
-        f"Model: {payload['model']} | Prompt: {payload.get('prompt_version', 'unknown')} "
+        f"Schema: {payload.get('schema_version', 'unknown')} | Model: {payload['model']} | "
+        f"Prompt: {payload.get('prompt_version', 'unknown')} "
         f"({payload.get('prompt_sha256', 'unknown')[:12]}) | OpenAI: {payload.get('used_openai', 'unknown')}"
     )
     safety = payload.get("safety_check", {})
