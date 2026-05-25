@@ -218,6 +218,8 @@ python scripts/compare_runs.py reports/eval_runs/run_a.json reports/eval_runs/ru
 - Evidence scoring uses deterministic text coverage, not human judgment.
 - The deterministic fallback is for reproducible local and CI runs, not a substitute for model-quality evaluation.
 
+See [`SECURITY.md`](SECURITY.md) for notes on secrets, local-only data, and read-only tool safety.
+
 ## Tests
 
 ```bash
