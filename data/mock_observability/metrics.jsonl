@@ -12,3 +12,13 @@
 {"timestamp":"2026-05-24T14:23:00Z","service":"search-api","metric":"http_5xx_rate_pct","value":0.4,"unit":"percent","notes":"no 5xx spike observed"}
 {"timestamp":"2026-05-24T14:24:00Z","service":"reporting-api","metric":"analytics_exporter_lag_minutes","value":12,"unit":"minutes","notes":"internal reporting freshness warning"}
 {"timestamp":"2026-05-24T14:25:00Z","service":"reporting-api","metric":"scheduled_report_success_pct","value":99.2,"unit":"percent","notes":"scheduled reports still completing"}
+{"timestamp":"2026-05-24T14:06:30Z","service":"inventory-api","metric":"p95_latency_ms","value":1900,"unit":"ms","notes":"database latency elevated without recent deploy"}
+{"timestamp":"2026-05-24T14:07:30Z","service":"inventory-api","metric":"slow_query_count","value":240,"unit":"queries","notes":"slow inventory lookup queries increased"}
+{"timestamp":"2026-05-24T14:10:30Z","service":"billing-api","metric":"iam_access_denied_rate_pct","value":22.4,"unit":"percent","notes":"IAM permission failures on billing writes"}
+{"timestamp":"2026-05-24T14:11:30Z","service":"billing-api","metric":"billing_write_failure_rate_pct","value":17.8,"unit":"percent","notes":"customer billing updates failing"}
+{"timestamp":"2026-05-24T14:12:30Z","service":"notifications-api","metric":"http_5xx_rate_pct","value":0.02,"unit":"percent","notes":"within baseline despite noisy alert"}
+{"timestamp":"2026-05-24T14:13:30Z","service":"notifications-api","metric":"synthetic_timeout_count","value":1,"unit":"count","notes":"single transient canary timeout"}
+{"timestamp":"2026-05-24T14:16:30Z","service":"media-api","metric":"us_east_1_upload_failure_rate_pct","value":11.6,"unit":"percent","notes":"partial regional upload degradation"}
+{"timestamp":"2026-05-24T14:17:30Z","service":"media-api","metric":"global_upload_failure_rate_pct","value":3.1,"unit":"percent","notes":"impact limited by regional routing"}
+{"timestamp":"2026-05-24T14:20:30Z","service":"log-ingestor","metric":"log_ingestion_lag_minutes","value":18,"unit":"minutes","notes":"logging pipeline outage delaying observability data"}
+{"timestamp":"2026-05-24T14:21:30Z","service":"log-ingestor","metric":"indexer_throttle_rate_pct","value":13.4,"unit":"percent","notes":"indexer throttling causing ingestion backlog"}

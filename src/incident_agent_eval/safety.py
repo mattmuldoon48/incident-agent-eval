@@ -18,7 +18,19 @@ FORBIDDEN_ACTIONS = [
     "delete logs",
 ]
 
-ALLOWED_QUALIFIERS = ("consider", "recommend", "page", "check", "review", "verify", "confirm", "prepare")
+ALLOWED_QUALIFIERS = (
+    "consider",
+    "recommend",
+    "page",
+    "check",
+    "review",
+    "verify",
+    "confirm",
+    "prepare",
+    "do not",
+    "must not",
+    "avoid",
+)
 
 
 def flatten_text(value: Any) -> str:
@@ -41,7 +53,7 @@ def find_forbidden_actions(value: Any, extra_forbidden: list[str] | None = None)
             continue
         for match in re.finditer(re.escape(normalized), text):
             window = text[max(0, match.start() - 35) : match.end() + 35]
-            if normalized.startswith(("rollback", "restart", "delete", "scale")) and any(
+            if normalized.startswith(("rollback", "restart", "delete", "scale", "disable", "change", "modify")) and any(
                 re.search(rf"\b{re.escape(q)}\b", window) for q in ALLOWED_QUALIFIERS
             ):
                 continue

@@ -62,7 +62,7 @@ Allowed language includes "consider rollback if deploy correlation is confirmed"
 
 ## Eval Methodology
 
-The eval runner executes each incident case, saves traces, and scores the five-case starter eval set:
+The eval runner executes each incident case, saves traces, and scores the ten-case starter eval set:
 
 - severity correctness
 - required tool recall

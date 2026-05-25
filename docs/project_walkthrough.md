@@ -54,7 +54,7 @@ The agent follows a fixed sequence:
 
 ## Eval Story
 
-The five-case eval set covers checkout, payments, auth, search, and reporting scenarios. It scores:
+The ten-case eval set covers checkout, payments, auth, search, reporting, inventory, billing, notifications, media, and observability scenarios. It scores:
 
 - severity correctness
 - required tool recall

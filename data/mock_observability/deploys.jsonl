@@ -3,3 +3,8 @@
 {"timestamp":"2026-05-24T14:03:00Z","service":"auth-service","version":"auth-service-config:2026.05.24.2","actor":"config-bot","summary":"OIDC issuer and token audience configuration rollout"}
 {"timestamp":"2026-05-24T13:58:00Z","service":"search-api","version":"search-api:2026.05.24.4","actor":"deploy-bot","summary":"query enrichment and catalog cache client changes"}
 {"timestamp":"2026-05-24T11:20:00Z","service":"reporting-api","version":"reporting-api:2026.05.24.1","actor":"deploy-bot","summary":"dashboard label cleanup; no exporter changes"}
+{"timestamp":"2026-05-24T12:10:00Z","service":"inventory-api","version":"inventory-api:2026.05.24.1","actor":"deploy-bot","summary":"routine dependency update outside incident window"}
+{"timestamp":"2026-05-24T14:02:00Z","service":"billing-api","version":"billing-iam-policy:2026.05.24.2","actor":"iam-bot","summary":"billing ledger writer IAM policy update"}
+{"timestamp":"2026-05-24T10:45:00Z","service":"notifications-api","version":"notifications-api:2026.05.24.1","actor":"deploy-bot","summary":"template copy update outside incident window"}
+{"timestamp":"2026-05-24T13:40:00Z","service":"media-api","version":"media-api:2026.05.24.2","actor":"deploy-bot","summary":"regional upload routing config refresh"}
+{"timestamp":"2026-05-24T12:55:00Z","service":"log-ingestor","version":"log-ingestor:2026.05.24.1","actor":"deploy-bot","summary":"index template update outside incident window"}

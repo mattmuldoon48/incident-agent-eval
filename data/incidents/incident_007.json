@@ -1,0 +1,12 @@
+{
+  "id": "incident_007",
+  "service": "billing-api",
+  "summary": "IAM permission errors causing billing write failures",
+  "symptoms": [
+    "AccessDenied errors increased for DynamoDB PutItem",
+    "customer billing updates are failing",
+    "IAM policy change completed shortly before alert",
+    "retry rate increased across billing write path"
+  ],
+  "started_at": "2026-05-24T14:10:00Z"
+}

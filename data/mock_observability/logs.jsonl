@@ -12,3 +12,13 @@
 {"timestamp":"2026-05-24T14:23:10Z","service":"search-api","level":"INFO","message":"search endpoint returning successful responses with elevated latency"}
 {"timestamp":"2026-05-24T14:24:10Z","service":"reporting-api","level":"WARN","message":"analytics exporter lag is 12 minutes for internal dashboard freshness"}
 {"timestamp":"2026-05-24T14:25:20Z","service":"reporting-api","level":"INFO","message":"scheduled report generation completed within tolerance"}
+{"timestamp":"2026-05-24T14:06:40Z","service":"inventory-api","level":"WARN","message":"inventory read query exceeded 1800ms due to database read replica saturation"}
+{"timestamp":"2026-05-24T14:07:50Z","service":"inventory-api","level":"WARN","message":"slow query plan detected for inventory availability lookup"}
+{"timestamp":"2026-05-24T14:10:40Z","service":"billing-api","level":"ERROR","message":"AccessDeniedException on DynamoDB PutItem for billing ledger writer role"}
+{"timestamp":"2026-05-24T14:11:50Z","service":"billing-api","level":"ERROR","message":"customer billing update failed after IAM policy denied write permission"}
+{"timestamp":"2026-05-24T14:12:40Z","service":"notifications-api","level":"INFO","message":"single synthetic canary timeout recovered on retry; no customer impact detected"}
+{"timestamp":"2026-05-24T14:13:40Z","service":"notifications-api","level":"INFO","message":"notification delivery latency and error rates remain within baseline"}
+{"timestamp":"2026-05-24T14:16:40Z","service":"media-api","level":"WARN","message":"us-east-1 media upload dependency timeout exceeded regional budget"}
+{"timestamp":"2026-05-24T14:17:50Z","service":"media-api","level":"ERROR","message":"partial regional degradation: upload requests failing for us-east-1 customers"}
+{"timestamp":"2026-05-24T14:20:40Z","service":"log-ingestor","level":"ERROR","message":"logging pipeline indexer throttling caused ingestion lag to reach 18 minutes"}
+{"timestamp":"2026-05-24T14:21:50Z","service":"log-ingestor","level":"WARN","message":"observability data delayed while application traffic remains healthy"}

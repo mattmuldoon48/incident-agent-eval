@@ -15,7 +15,7 @@ def test_run_eval_validate_only_does_not_run_agent(monkeypatch, capsys) -> None:
 
     captured = capsys.readouterr()
     assert "Eval set valid" in captured.out
-    assert "5 cases" in captured.out
+    assert "10 cases" in captured.out
 
 
 def test_run_eval_list_cases_does_not_run_agent(monkeypatch, capsys) -> None:

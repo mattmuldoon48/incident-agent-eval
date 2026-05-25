@@ -123,6 +123,41 @@ def deterministic_report(context: dict[str, Any]) -> TriageReport:
             "Monitor exporter lag and scheduled report completion metrics.",
             "Review analytics exporter logs for delayed dashboard freshness updates.",
         ]
+    elif service == "inventory-api":
+        causes = ["database read replica saturation", "slow query plan regression"]
+        actions = [
+            "Page the Inventory Platform owner if latency remains elevated.",
+            "Check database latency, read replica saturation, and slow query logs.",
+            "Review query plans without changing database configuration from this agent.",
+        ]
+    elif service == "billing-api":
+        causes = ["IAM policy regression", "billing writer role permission denial"]
+        actions = [
+            "Page the Billing Platform owner and IAM reviewer.",
+            "Compare the recent IAM policy change with the prior working policy.",
+            "Prepare a permission fix or rollback for human approval if AccessDenied correlation is confirmed.",
+        ]
+    elif service == "notifications-api":
+        causes = ["synthetic canary false positive", "alert threshold too sensitive"]
+        actions = [
+            "Notify the Notifications Platform owner during normal triage.",
+            "Verify customer-facing notification metrics remain within baseline.",
+            "Review alert threshold tuning after confirming the alert is noisy.",
+        ]
+    elif service == "media-api":
+        causes = ["partial regional dependency degradation", "us-east-1 upload timeout increase"]
+        actions = [
+            "Page the Media Platform owner for regional customer impact.",
+            "Compare us-east-1 upload failures against healthy regions.",
+            "Consider approved traffic steering only through a human operations process.",
+        ]
+    elif service == "log-ingestor":
+        causes = ["logging pipeline backpressure", "indexer throttling"]
+        actions = [
+            "Page the Observability Platform owner if delayed logs impair incident response.",
+            "Check log ingestion lag and indexer throttle metrics.",
+            "Preserve observability data; do not delete logs or disable alerts.",
+        ]
     else:
         causes = ["unknown service degradation"]
         actions = ["Page the owning service team.", "Review metrics, logs, deploys, and relevant runbooks."]

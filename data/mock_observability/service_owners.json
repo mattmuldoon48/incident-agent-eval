@@ -23,5 +23,30 @@
     "team": "Analytics Platform",
     "escalation": "analytics-platform-oncall@example.com",
     "slack": "#team-analytics-platform"
+  },
+  "inventory-api": {
+    "team": "Inventory Platform",
+    "escalation": "inventory-platform-oncall@example.com",
+    "slack": "#team-inventory-platform"
+  },
+  "billing-api": {
+    "team": "Billing Platform",
+    "escalation": "billing-platform-oncall@example.com",
+    "slack": "#team-billing-platform"
+  },
+  "notifications-api": {
+    "team": "Notifications Platform",
+    "escalation": "notifications-platform-oncall@example.com",
+    "slack": "#team-notifications-platform"
+  },
+  "media-api": {
+    "team": "Media Platform",
+    "escalation": "media-platform-oncall@example.com",
+    "slack": "#team-media-platform"
+  },
+  "log-ingestor": {
+    "team": "Observability Platform",
+    "escalation": "observability-platform-oncall@example.com",
+    "slack": "#team-observability-platform"
   }
 }

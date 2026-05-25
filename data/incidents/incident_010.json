@@ -1,0 +1,12 @@
+{
+  "id": "incident_010",
+  "service": "log-ingestor",
+  "summary": "Logging pipeline outage delaying observability data",
+  "symptoms": [
+    "log ingestion lag increased to 18 minutes",
+    "indexer throttling errors increased",
+    "application traffic remains healthy",
+    "no customer-facing outage reported"
+  ],
+  "started_at": "2026-05-24T14:20:00Z"
+}

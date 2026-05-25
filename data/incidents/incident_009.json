@@ -1,0 +1,12 @@
+{
+  "id": "incident_009",
+  "service": "media-api",
+  "summary": "Partial regional degradation for media uploads",
+  "symptoms": [
+    "upload failures increased in us-east-1 only",
+    "other regions are healthy",
+    "regional dependency timeout rate increased",
+    "some customers cannot upload media"
+  ],
+  "started_at": "2026-05-24T14:16:00Z"
+}

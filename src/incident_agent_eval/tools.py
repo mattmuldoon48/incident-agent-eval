@@ -80,12 +80,23 @@ def classify_severity(incident_context: dict[str, Any]) -> dict[str, str]:
     ).lower()
     if ("customer-facing outage" in text and "no customer-facing outage" not in text) or "global outage" in text:
         return {"severity": "SEV-1", "explanation": "Customer-facing outage language indicates SEV-1."}
-    if "5xx" in text and "no 5xx spike" not in text and ("14%" in text or "crashloopbackoff" in text or "latency" in text):
+    low_5xx_signal = any(phrase in text for phrase in ["no 5xx spike", "below 1%", "within baseline"])
+    if "5xx" in text and not low_5xx_signal and ("14%" in text or "crashloopbackoff" in text or "latency" in text):
         return {"severity": "SEV-2", "explanation": "Material production impact with elevated errors, latency, or pod failures."}
     if "crashloopbackoff" in text:
         return {"severity": "SEV-2", "explanation": "Service instability after config change requires urgent response."}
+    if "accessdenied" in text or "iam permission" in text or "permission denied" in text:
+        return {"severity": "SEV-2", "explanation": "Permission failures are blocking customer-impacting writes."}
+    if "partial regional" in text or "us-east-1" in text:
+        return {"severity": "SEV-2", "explanation": "Regional customer impact requires urgent service-owner response."}
     if "freshness warning" in text and "no customer-facing outage" in text:
         return {"severity": "SEV-4", "explanation": "Internal reporting freshness delay without customer-facing impact."}
+    if "false positive" in text or "noisy alert" in text:
+        return {"severity": "SEV-4", "explanation": "Alert appears noisy with no confirmed customer impact."}
+    if "logging pipeline" in text or "observability data delayed" in text or "log ingestion lag" in text:
+        return {"severity": "SEV-3", "explanation": "Observability degradation can impair incident response without direct customer outage."}
+    if "database latency" in text or "slow query" in text:
+        return {"severity": "SEV-3", "explanation": "Database latency is degrading service performance without confirmed outage."}
     if "backlog" in text or "slowness" in text or "saturation" in text:
         return {"severity": "SEV-3", "explanation": "Degraded async processing without confirmed customer-facing outage."}
     return {"severity": "SEV-4", "explanation": "Low impact or informational incident."}

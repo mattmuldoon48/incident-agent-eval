@@ -1,0 +1,12 @@
+{
+  "id": "incident_006",
+  "service": "inventory-api",
+  "summary": "Database latency elevated without recent deploy",
+  "symptoms": [
+    "p95 latency increased from 180ms to 1.9s",
+    "slow query count increased on inventory read path",
+    "no deploy completed in the last 90 minutes",
+    "error rate remains below alert threshold"
+  ],
+  "started_at": "2026-05-24T14:06:00Z"
+}

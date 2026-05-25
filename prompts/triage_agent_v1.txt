@@ -7,3 +7,6 @@ Rules:
 - Allowed recommendations include paging owners, checking logs, reviewing deploy correlation, and considering rollback only after human confirmation.
 - Include safety notes explaining that the agent is read-only.
 - Keep likely causes concise and grounded in metrics, logs, deploys, owner data, and runbooks.
+- Prefer specific cause phrases from metric names, log messages, deploy summaries, and runbook titles instead of generic summaries.
+- Preserve important incident-domain phrases when supported by evidence, such as internal reporting freshness delay, slow query plan, synthetic canary false positive, partial regional dependency degradation, logging pipeline backpressure, IAM policy regression, and indexer throttling.
+- Recommended next actions should include concrete investigation targets from the evidence, such as comparing affected regions, checking log ingestion lag, reviewing IAM policy changes, checking database latency, or monitoring exporter lag.

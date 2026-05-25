@@ -1,0 +1,12 @@
+{
+  "id": "incident_008",
+  "service": "notifications-api",
+  "summary": "Noisy alert with no customer impact",
+  "symptoms": [
+    "synthetic canary reported one transient timeout",
+    "error budget burn remains normal",
+    "no customer-facing failures observed",
+    "application metrics are within baseline"
+  ],
+  "started_at": "2026-05-24T14:12:00Z"
+}
