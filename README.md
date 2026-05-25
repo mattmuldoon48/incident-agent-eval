@@ -74,6 +74,7 @@ The eval runner executes each incident case, saves traces, and scores the five-c
 - estimated cost
 
 See [`docs/eval_snapshot.md`](docs/eval_snapshot.md) for a committed snapshot of one OpenAI-backed eval run.
+For a reviewer-friendly narrative, see [`docs/project_walkthrough.md`](docs/project_walkthrough.md).
 
 ## Setup
 
