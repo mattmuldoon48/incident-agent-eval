@@ -104,6 +104,7 @@ If an OpenAI API call fails, the agent records a safety note and falls back to t
 Common commands are also available through `make`:
 
 ```bash
+make check
 make lint
 make test
 make eval-strict
@@ -238,6 +239,7 @@ See [`SECURITY.md`](SECURITY.md) for notes on secrets, local-only data, and read
 ## Tests
 
 ```bash
+make check
 ruff check src scripts tests
 pytest
 ```

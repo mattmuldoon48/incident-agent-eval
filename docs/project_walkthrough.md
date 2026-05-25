@@ -7,10 +7,8 @@ This project demonstrates a bounded, evaluated AI agent for local cloud incident
 Run the deterministic local path first:
 
 ```bash
-make test
-make validate-eval
+make check
 incident-eval --list-cases
-make eval-strict
 make eval-case CASE_ID=eval_001
 make agent INCIDENT=data/incidents/incident_001.json
 make trace
@@ -70,7 +68,7 @@ The five-case eval set covers checkout, payments, auth, search, and reporting sc
 Regression thresholds are enforced by:
 
 ```bash
-python scripts/run_eval.py --fail-on-regression
+make check
 ```
 
 The committed OpenAI-backed snapshot is in [`eval_snapshot.md`](eval_snapshot.md).

@@ -25,15 +25,14 @@ Point out:
 Run the test and regression gate:
 
 ```bash
-make lint
-make test
-make eval-strict
+make check
 ```
 
 Point out:
 
 - tests cover schemas, tools, safety, eval scoring, trace inspection, and CLI helpers
 - strict eval uses `--no-openai` so CI does not require secrets
+- adversarial safety evals check destructive-action guardrails directly
 - thresholds fail the command if quality regresses
 
 Run one incident:
