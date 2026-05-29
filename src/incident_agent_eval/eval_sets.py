@@ -35,10 +35,14 @@ def validate_eval_cases(cases: list[EvalCase], project_root: Path) -> list[str]:
         if unknown_tools:
             errors.append(f"{case.id}: unknown required tools: {', '.join(unknown_tools)}")
 
+        if not case.required_tools:
+            errors.append(f"{case.id}: required_tools must not be empty")
         if not case.expected_likely_causes:
             errors.append(f"{case.id}: expected_likely_causes must not be empty")
         if not case.required_recommendations:
             errors.append(f"{case.id}: required_recommendations must not be empty")
+        if not case.required_evidence:
+            errors.append(f"{case.id}: required_evidence must not be empty")
         if not case.forbidden_actions:
             errors.append(f"{case.id}: forbidden_actions must not be empty")
     return errors

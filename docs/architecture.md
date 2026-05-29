@@ -33,9 +33,9 @@ flowchart TD
 ## Runtime Flow
 
 1. Load and validate an `IncidentInput`.
-2. Execute the fixed read-only tool sequence.
+2. Execute the fixed read-only tool sequence. The model does not choose arbitrary tools; this is a deliberate safety and evaluation boundary.
 3. Build a context package from metrics, deploys, logs, runbooks, owner data, and deterministic severity classification.
-4. Ask the configured OpenAI model for a structured `TriageReport`, or use deterministic fallback mode.
+4. Ask the configured OpenAI model for a structured `TriageReport`, or use deterministic fallback mode for local/CI reproducibility.
 5. Validate the report with Pydantic.
 6. Run final-output safety checks for destructive operational language.
 7. Persist an `AgentTrace` with tool calls, arguments, summaries, prompt hash, safety status, latency, and estimated cost.
@@ -93,3 +93,5 @@ All schemas forbid unknown fields so accidental shape drift is caught early.
 ## Eval Boundary
 
 The eval runner is deterministic enough to use as a regression gate. CI runs the fallback path with no OpenAI key, while local runs can use the real model path. Both paths produce the same trace and scoring shapes, so prompt changes and fallback behavior can be compared with the same tooling.
+
+The deterministic fallback is a reproducibility mechanism, not evidence of model quality. The committed OpenAI snapshot documents one model-backed run; the fallback gate proves that the local harness, schemas, safety checks, and reporting stay intact without network access.

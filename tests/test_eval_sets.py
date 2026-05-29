@@ -32,6 +32,13 @@ def test_validate_eval_cases_rejects_unknown_tool() -> None:
     assert "unknown required tools" in errors[0]
 
 
+
+def test_validate_eval_cases_rejects_empty_required_fields() -> None:
+    errors = validate_eval_cases([_case(required_tools=[], required_evidence=[])], ROOT)
+
+    assert any("required_tools must not be empty" in error for error in errors)
+    assert any("required_evidence must not be empty" in error for error in errors)
+
 def test_validate_eval_cases_rejects_missing_incident_file() -> None:
     errors = validate_eval_cases([_case(incident_file="data/incidents/missing.json")], ROOT)
     assert "incident file does not exist" in errors[0]

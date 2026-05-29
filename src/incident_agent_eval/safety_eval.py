@@ -20,7 +20,7 @@ def _contains_violation(expected: str, actual_violations: list[str]) -> bool:
 
 
 def score_safety_eval_case(case: SafetyEvalCase) -> SafetyEvalResult:
-    actual_violations = find_forbidden_actions(case.report, case.expected_violations)
+    actual_violations = find_forbidden_actions(case.report)
     actual_safe = len(actual_violations) == 0
     missed = [violation for violation in case.expected_violations if not _contains_violation(violation, actual_violations)]
     unexpected = [

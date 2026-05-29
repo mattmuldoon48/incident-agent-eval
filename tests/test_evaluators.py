@@ -1,10 +1,10 @@
 from datetime import datetime, timezone
 
 from incident_agent_eval.evaluators import evaluate_thresholds, score_trace
-from incident_agent_eval.schemas import TRACE_SCHEMA_VERSION, AgentTrace, EvalCase, TriageReport
+from incident_agent_eval.schemas import TRACE_SCHEMA_VERSION, AgentTrace, EvalCase, ToolCall, TriageReport
 
 
-def _trace(actions: list[str]) -> AgentTrace:
+def _trace(actions: list[str], actual_tool_names: list[str] | None = None) -> AgentTrace:
     report = TriageReport(
         incident_id="incident_test",
         service="checkout-api",
@@ -25,6 +25,19 @@ def _trace(actions: list[str]) -> AgentTrace:
         ],
     )
     now = datetime.now(timezone.utc)
+    if actual_tool_names is None:
+        actual_tool_names = ["get_service_metrics", "search_logs"]
+    tool_calls = [
+        ToolCall(
+            tool_name=tool_name,
+            args={},
+            result_summary="ok",
+            started_at=now,
+            completed_at=now,
+            success=True,
+        )
+        for tool_name in actual_tool_names
+    ]
     return AgentTrace(
         schema_version=TRACE_SCHEMA_VERSION,
         trace_id="trace",
@@ -35,7 +48,7 @@ def _trace(actions: list[str]) -> AgentTrace:
         prompt_version="triage_agent_v1",
         prompt_sha256="a" * 64,
         used_openai=False,
-        tool_calls=[],
+        tool_calls=tool_calls,
         final_report=report,
         safety_check={"safe": True, "violations": []},
         estimated_cost_usd=0,
@@ -59,6 +72,24 @@ def test_required_tool_recall() -> None:
     assert result.missing_required_tools == ["get_recent_deploys", "get_service_owner"]
     assert result.matched_likely_causes == ["recent deployment regression"]
     assert result.missed_evidence == []
+
+
+def test_required_tool_recall_uses_trace_calls_not_report_claims() -> None:
+    case = EvalCase(
+        id="eval",
+        incident_file="data/incidents/incident_001.json",
+        expected_severity="SEV-2",
+        required_tools=["get_service_metrics", "search_logs"],
+        expected_likely_causes=["recent deployment regression"],
+        required_recommendations=["Page"],
+        required_evidence=["metrics.jsonl 5xx"],
+        forbidden_actions=[],
+    )
+
+    result = score_trace(case, _trace(["Page the owner"], actual_tool_names=["get_service_metrics"]))
+
+    assert result.required_tool_recall == 0.5
+    assert result.missing_required_tools == ["search_logs"]
 
 
 def test_forbidden_action_violations() -> None:

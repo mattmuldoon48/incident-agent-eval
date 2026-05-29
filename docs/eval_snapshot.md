@@ -1,6 +1,6 @@
 # Eval Snapshot
 
-This snapshot records one OpenAI-backed run of the local eval set. The raw generated trace and eval JSON files are intentionally ignored because they are run artifacts.
+This snapshot records one OpenAI-backed run of the local eval set. The raw generated trace and eval JSON files are intentionally ignored because they are run artifacts. Treat this as a documented example run, not a production benchmark or claim of autonomous incident-response readiness.
 
 Run date: 2026-05-25
 
@@ -44,5 +44,6 @@ Case-level metrics:
 Notes:
 
 - The CI workflow runs the deterministic local fallback eval so it does not require an API key.
+- The deterministic fallback gate proves local harness behavior; it is not model-quality evidence.
 - The OpenAI-backed run validates the structured report against the strict Pydantic JSON schema.
 - Generated traces include tool calls, arguments, result summaries, prompt fingerprint, final report, safety check results, latency, and estimated cost.

@@ -29,7 +29,9 @@ python scripts/compare_runs.py reports/eval_runs/run_a.json reports/eval_runs/ru
 
 ## System Behavior
 
-The agent follows a fixed sequence:
+The agent follows a fixed sequence. That is deliberate: the project is optimizing for bounded, reproducible, inspectable eval behavior rather than autonomous tool planning.
+
+Sequence:
 
 1. Load incident JSON.
 2. Read service metrics from local JSONL.
@@ -56,15 +58,15 @@ The agent follows a fixed sequence:
 
 The ten-case eval set covers checkout, payments, auth, search, reporting, inventory, billing, notifications, media, and observability scenarios. It scores:
 
-- severity correctness
-- required tool recall
-- likely cause coverage
-- evidence coverage
-- recommendation coverage
-- forbidden action violations
-- latency
-- estimated cost
+- severity correctness: exact severity match
+- required tool recall: successful required read-only tool calls in the trace
+- likely cause coverage: expected cause phrases found by deterministic text matching
+- evidence coverage: required evidence strings found in cited evidence
+- recommendation coverage: required action phrases found by deterministic text matching
+- forbidden action violations: destructive operational language in the final report
+- latency and estimated OpenAI token cost
 
+See [`eval_protocol.md`](eval_protocol.md) for metric caveats. The deterministic fallback eval is the local/CI regression gate; the committed OpenAI-backed snapshot is an example model-backed run.
 Regression thresholds are enforced by:
 
 ```bash
@@ -85,9 +87,9 @@ The system is intentionally local and synthetic. It does not connect to producti
 
 ## Interview Talking Points
 
-- Why fixed tool sequencing is appropriate for a portfolio MVP.
+- Why fixed tool sequencing is appropriate for a bounded eval harness.
 - How local mock data makes the project reproducible and safe.
+- Why deterministic fallback is useful for CI but should not be treated as model-quality evidence.
 - Why final-output safety checks matter more than prompt-only safety.
 - How evidence coverage exposes whether outputs are grounded in retrieved context.
 - How prompt versions can be compared with the same eval harness.
-- How fallback behavior keeps CI reliable while preserving the real OpenAI path.

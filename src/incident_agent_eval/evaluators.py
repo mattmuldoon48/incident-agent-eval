@@ -61,9 +61,9 @@ def _matched_and_missed(expected: list[str], actual_text: str) -> tuple[list[str
 
 
 def score_trace(eval_case: EvalCase, trace: AgentTrace) -> EvalResult:
-    tools_used = set(trace.final_report.tools_used)
+    tools_used = {call.tool_name for call in trace.tool_calls if call.success}
     required_tools = set(eval_case.required_tools)
-    required_tool_recall = len(required_tools & tools_used) / len(eval_case.required_tools)
+    required_tool_recall = len(required_tools & tools_used) / len(required_tools) if required_tools else 1.0
     likely_cause_text = " ".join(trace.final_report.likely_causes)
     recommendation_text = " ".join(trace.final_report.recommended_next_actions)
     evidence_text = " ".join(

@@ -4,9 +4,9 @@ Use this when walking through the project in an interview, portfolio review, or 
 
 ## 60-Second Pitch
 
-Incident Agent Eval is a local, read-only AI incident triage agent. It takes a synthetic cloud incident, gathers evidence from mock metrics, logs, deploys, ownership data, and runbooks, then produces a structured triage report with severity, likely causes, evidence, next actions, escalation target, and safety notes.
+Incident Agent Eval is a local, read-only, fixed-sequence AI incident triage harness. It takes a synthetic cloud incident, gathers evidence from mock metrics, logs, deploys, ownership data, and runbooks, then produces a structured triage report with severity, likely causes, evidence, next actions, escalation target, and safety notes.
 
-The important engineering choices are the fixed read-only tool sequence, Pydantic structured outputs, full trace persistence, destructive-action safety checks, deterministic fallback mode, and regression evals over realistic incident scenarios.
+The important engineering choices are the deliberate fixed tool sequence, Pydantic structured outputs, full trace persistence, destructive-action safety checks, deterministic fallback mode for local/CI runs, and regression evals over realistic synthetic scenarios.
 
 ## Five-Minute Demo
 
@@ -94,8 +94,7 @@ Point out:
 
 Why use a fixed tool sequence?
 
-The project is optimizing for bounded, reviewable behavior. For incident triage, a constrained evidence-gathering path is easier to test, trace, and safety-check than an open-ended autonomous loop.
-
+The project is optimizing for bounded, reviewable behavior. For incident triage, a constrained evidence-gathering path is easier to test, trace, and safety-check than an open-ended autonomous loop. This repo is not trying to demonstrate autonomous remediation.
 Why local mock data?
 
 It keeps the project safe, reproducible, and portfolio-friendly. There is no real infrastructure access and no chance of mutating production systems.
@@ -106,7 +105,7 @@ The final report is the artifact a human might act on. Checking only the prompt 
 
 What makes this an eval project?
 
-Behavior changes are scored across a reusable JSONL eval set. The runner checks severity, required tools, likely causes, evidence, recommendations, forbidden actions, latency, and cost.
+Behavior changes are scored across a reusable JSONL eval set. The runner checks severity, successful required tool calls in the trace, likely causes, evidence, recommendations, forbidden actions, latency, and cost.
 
 What would productionization require?
 
