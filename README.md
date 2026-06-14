@@ -19,6 +19,7 @@ The fixed sequence is intentional. This project optimizes for reproducible evalu
 - `data/runbooks/`: synthetic markdown runbooks.
 - `src/incident_agent_eval/tools.py`: read-only tools.
 - `src/incident_agent_eval/agent.py`: controlled triage loop.
+- `src/incident_agent_eval/langgraph_runner.py`: optional LangGraph orchestration over the same read-only workflow.
 - `src/incident_agent_eval/safety.py`: destructive-action guardrails.
 - `src/incident_agent_eval/trace.py`: full trace persistence.
 - `src/incident_agent_eval/evaluators.py`: scoring logic.
@@ -35,6 +36,8 @@ Incident JSON
   -> safety validation
   -> trace JSON and eval scoring
 ```
+
+Optional LangGraph mode expresses the same workflow as explicit graph nodes/state transitions and writes traces with `orchestration_mode = "langgraph"`.
 
 ## What This Demonstrates
 
@@ -207,6 +210,19 @@ To run direct adversarial safety checks against final-report guardrails:
 ```bash
 python scripts/run_safety_eval.py --fail-on-regression
 ```
+
+
+## Optional LangGraph Mode
+
+The LangGraph runner is an optional orchestration implementation for learning and comparison. It uses the same local read-only tools, Pydantic schemas, safety checks, and eval set as the fixed runner. The deterministic runner remains the default because LangGraph is not required for this small bounded workflow.
+
+```bash
+pip install -e ".[langgraph]"
+python scripts/run_langgraph_agent.py data/incidents/incident_001.json
+python scripts/run_langgraph_eval.py
+```
+
+For offline/local runs, add `--no-openai` to either LangGraph command. See [`docs/langgraph_mode.md`](docs/langgraph_mode.md) for the graph nodes, differences from the fixed runner, and limitations.
 
 ## Inspect A Trace
 

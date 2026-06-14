@@ -17,6 +17,10 @@ dev = [
   "pytest>=8.2.0",
   "ruff>=0.8.0",
 ]
+langgraph = [
+  "langgraph",
+  "langchain-core",
+]
 
 [project.scripts]
 incident-agent = "incident_agent_eval.cli:run_agent_main"

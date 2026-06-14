@@ -57,6 +57,7 @@ class SafetyCheck(StrictBaseModel):
 
 class AgentTrace(StrictBaseModel):
     schema_version: str = TRACE_SCHEMA_VERSION
+    orchestration_mode: str = "deterministic"
     trace_id: str
     incident_id: str
     started_at: datetime

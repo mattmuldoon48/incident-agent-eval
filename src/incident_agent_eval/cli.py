@@ -42,7 +42,7 @@ RESULT_COLUMNS = [
     "estimated_cost_usd",
 ]
 
-METADATA_FIELDS = ["run_id", "eval_set", "model", "prompt_version", "used_openai"]
+METADATA_FIELDS = ["run_id", "eval_set", "model", "prompt_version", "used_openai", "orchestration_mode"]
 
 REQUIRED_DOCTOR_PATHS = [
     "data/incidents",
@@ -90,6 +90,7 @@ def write_markdown_report(path: Path, payload: dict) -> None:
         f"- Model: `{payload['model']}`",
         f"- Prompt version: `{payload['prompt_version']}`",
         f"- Used OpenAI: `{payload['used_openai']}`",
+        f"- Orchestration mode: `{payload.get('orchestration_mode', 'deterministic')}`",
         f"- Thresholds passed: `{thresholds['passed']}`",
         "",
         "## Aggregate Metrics",
@@ -327,6 +328,7 @@ def run_eval_main() -> None:
         "case_ids": [case.id for case in cases],
         "model": ", ".join(sorted(models)),
         "prompt_version": args.prompt_version,
+        "orchestration_mode": "deterministic",
         "used_openai": used_openai,
     }
     output_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
@@ -442,7 +444,8 @@ def print_trace(payload: dict) -> None:
     console.print(
         f"Schema: {payload.get('schema_version', 'unknown')} | Model: {payload['model']} | "
         f"Prompt: {payload.get('prompt_version', 'unknown')} "
-        f"({payload.get('prompt_sha256', 'unknown')[:12]}) | OpenAI: {payload.get('used_openai', 'unknown')}"
+        f"({payload.get('prompt_sha256', 'unknown')[:12]}) | OpenAI: {payload.get('used_openai', 'unknown')} | "
+        f"Orchestration: {payload.get('orchestration_mode', 'deterministic')}"
     )
     safety = payload.get("safety_check", {})
     console.print(f"Safety: {safety.get('safe', 'unknown')} violations={safety.get('violations', [])}")
