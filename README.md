@@ -224,6 +224,10 @@ python scripts/run_langgraph_eval.py
 
 For offline/local runs, add `--no-openai` to either LangGraph command. See [`docs/langgraph_mode.md`](docs/langgraph_mode.md) for the graph nodes, differences from the fixed runner, and limitations.
 
+## Trace Review Notes
+
+Trace files are the audit trail for a run: each read-only tool call, its input, the returned local evidence, and the final structured report can be reviewed without rerunning the model path. Use traces to debug missing evidence before changing prompts.
+
 ## Inspect A Trace
 
 ```bash
