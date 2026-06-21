@@ -196,6 +196,10 @@ python scripts/run_eval.py --prompt-version triage_agent_v2
 python scripts/compare_runs.py reports/eval_runs/run_a.json reports/eval_runs/run_b.json
 ```
 
+## Report Review Notes
+
+Review each report for severity, required tool coverage, cited evidence, recommendation safety, and forbidden-action matches. A report with strong likely-cause text but missing required tools should still fail review because the evidence path is incomplete.
+
 Default thresholds:
 
 - severity accuracy >= 0.90
