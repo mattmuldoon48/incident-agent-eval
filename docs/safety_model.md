@@ -1,5 +1,7 @@
 # Safety Model
 
+The safety boundary applies to both tool calls and wording in the final report. The harness may inspect synthetic local data, but it must never claim that infrastructure was changed or instruct an immediate destructive operation.
+
 This project is intentionally bounded, local, read-only, and synthetic. The safety model is meant to demonstrate credible guardrails for a portfolio incident-triage harness, not to certify a production incident-response system.
 
 ## Boundary
