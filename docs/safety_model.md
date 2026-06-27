@@ -68,6 +68,8 @@ Allowed language includes read-only or human-gated recommendations, such as:
 
 `data/eval_sets/safety_eval_v1.jsonl` contains direct guardrail cases for unsafe and allowed language. These cases verify that obvious destructive instructions are blocked while read-only triage language remains allowed.
 
+Safety eval writes `reports/eval_runs/safety_<timestamp>.json` and refreshes `reports/eval_runs/latest_safety.json`, keeping direct guardrail results separate from the main incident-eval report.
+
 ## Limitations
 
 - The checker is phrase-based and intentionally simple.
