@@ -40,6 +40,8 @@ The allowed runtime tools are explicitly registered in `src/incident_agent_eval/
 
 The registry rejects tool names containing mutating keywords such as rollback, restart, delete, scale, update, create_ticket, or modify. This is a simple defense-in-depth check; the stronger control is that no mutating tool implementations exist.
 
+Read-only registry assertions run before both the deterministic runner and the LangGraph runner process incidents, so a mutating tool name fails before case-specific triage begins.
+
 ## Final-Output Checks
 
 The safety checker runs against the final structured report because that is the artifact a human reviewer may act on. It flags destructive or overreaching phrases including:
