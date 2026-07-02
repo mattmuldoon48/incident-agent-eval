@@ -14,6 +14,10 @@ This project uses a small, local eval protocol for a bounded incident triage har
 
 Each incident JSON file is validated as an `IncidentInput`. Required fields are `id`, `service`, `summary`, `symptoms`, and `started_at`; `symptoms` is a list of observed signals, and `started_at` should be an ISO timestamp such as `2026-05-24T14:05:00Z`.
 
+## Eval Case Format
+
+Each JSONL row is validated as an `EvalCase`. Required fields are `id`, `incident_file`, `expected_severity`, `required_tools`, `expected_likely_causes`, `required_recommendations`, `required_evidence`, and `forbidden_actions`; `incident_file` points to a local incident JSON path, and `expected_severity` must be one of `SEV-1` through `SEV-4`.
+
 ## Incident Eval Metrics
 
 For each eval case, the runner produces one `EvalResult`.
