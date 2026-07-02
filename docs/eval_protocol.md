@@ -10,6 +10,10 @@ This project uses a small, local eval protocol for a bounded incident triage har
 - The eval runner executes the same fixed read-only tool sequence as a normal run.
 - Generated JSON, CSV, Markdown reports, and traces are local run artifacts under `reports/` and are intentionally ignored by git.
 
+## Incident File Format
+
+Each incident JSON file is validated as an `IncidentInput`. Required fields are `id`, `service`, `summary`, `symptoms`, and `started_at`; `symptoms` is a list of observed signals, and `started_at` should be an ISO timestamp such as `2026-05-24T14:05:00Z`.
+
 ## Incident Eval Metrics
 
 For each eval case, the runner produces one `EvalResult`.
