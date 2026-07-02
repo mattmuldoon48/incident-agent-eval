@@ -18,6 +18,12 @@ Each incident JSON file is validated as an `IncidentInput`. Required fields are 
 
 Each JSONL row is validated as an `EvalCase`. Required fields are `id`, `incident_file`, `expected_severity`, `required_tools`, `expected_likely_causes`, `required_recommendations`, `required_evidence`, and `forbidden_actions`; `incident_file` points to a local incident JSON path, and `expected_severity` must be one of `SEV-1` through `SEV-4`.
 
+Before adding a case, run validation-only mode to catch duplicate IDs, missing incident files, invalid severities, unknown tool names, and empty expected lists without generating traces or reports:
+
+```bash
+python scripts/run_eval.py --validate-only
+```
+
 ## Incident Eval Metrics
 
 For each eval case, the runner produces one `EvalResult`.
