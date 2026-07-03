@@ -1,3 +1,7 @@
+import pytest
+from pydantic import ValidationError
+
+
 from incident_agent_eval.schemas import EvidenceItem, IncidentInput, TriageReport
 
 
@@ -10,6 +14,18 @@ def test_incident_input_validates() -> None:
         started_at="2026-05-24T14:05:00Z",
     )
     assert incident.service == "checkout-api"
+
+
+def test_incident_input_rejects_unknown_fields() -> None:
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        IncidentInput(
+            id="incident_test",
+            service="checkout-api",
+            summary="Elevated errors",
+            symptoms=["5xx increased"],
+            started_at="2026-05-24T14:05:00Z",
+            owner="Checkout Platform",
+        )
 
 
 def test_triage_report_validates() -> None:
