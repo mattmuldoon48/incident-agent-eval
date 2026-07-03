@@ -59,3 +59,13 @@ def test_triage_report_rejects_invalid_severity() -> None:
             safety_notes=["Read-only"],
             tools_used=["search_logs"],
         )
+
+
+def test_evidence_item_rejects_unknown_fields() -> None:
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        EvidenceItem(
+            source="logs",
+            quote_or_summary="database timeout",
+            relevance="matches symptom",
+            confidence=0.9,
+        )
