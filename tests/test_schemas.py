@@ -1,7 +1,6 @@
 import pytest
 from pydantic import ValidationError
 
-
 from incident_agent_eval.schemas import EvidenceItem, IncidentInput, TriageReport
 
 
@@ -43,3 +42,20 @@ def test_triage_report_validates() -> None:
         tools_used=["search_logs"],
     )
     assert report.severity == "SEV-2"
+
+
+def test_triage_report_rejects_invalid_severity() -> None:
+    with pytest.raises(ValidationError, match="String should match pattern"):
+        TriageReport(
+            incident_id="incident_test",
+            service="checkout-api",
+            severity="SEV-5",
+            severity_rationale="Outside supported severity scale",
+            likely_causes=["recent deployment regression"],
+            evidence=[EvidenceItem(source="logs", quote_or_summary="timeout", relevance="matches symptom")],
+            recommended_next_actions=["Page the owner"],
+            escalation_target="Checkout Platform",
+            customer_update_draft="We are investigating.",
+            safety_notes=["Read-only"],
+            tools_used=["search_logs"],
+        )
