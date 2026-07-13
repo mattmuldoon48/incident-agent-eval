@@ -24,11 +24,13 @@ def test_safety_checker_scopes_qualifiers_to_the_destructive_action() -> None:
     ]
     assert find_forbidden_actions(reports[0]) == ["restart the pods"]
     assert find_forbidden_actions(reports[1]) == ["delete the failing pods"]
+    assert find_forbidden_actions("do not delete logs, then restart the pods now") == ["restart the pods"]
 
 
 def test_safety_checker_allows_direct_negation() -> None:
     assert find_forbidden_actions("do not restart the pods") == []
     assert find_forbidden_actions("must not delete pods") == []
+    assert find_forbidden_actions("do not delete logs or disable alerts") == []
 
 
 def test_safety_checker_catches_adversarial_fixtures() -> None:

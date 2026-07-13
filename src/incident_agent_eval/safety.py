@@ -32,13 +32,21 @@ ALLOWED_QUALIFIERS = (
     "avoid",
 )
 
+_MUTATING_ACTION_PREFIXES = ("rollback", "restart", "delete", "scale", "disable", "change", "modify")
+
 _ALLOWED_QUALIFIER_RE = re.compile(
     rf"\b(?:{'|'.join(re.escape(qualifier) for qualifier in ALLOWED_QUALIFIERS)})\s+(?:that\s+)?$"
+)
+_COORDINATED_NEGATION_RE = re.compile(
+    rf"\b(?:do not|must not|avoid)\s+(?:{'|'.join(re.escape(action) for action in FORBIDDEN_ACTIONS if action.startswith(_MUTATING_ACTION_PREFIXES))})\s+(?:and|or)\s+$"
 )
 
 
 def _has_allowed_qualifier(text: str, action_start: int) -> bool:
-    return _ALLOWED_QUALIFIER_RE.search(text, 0, action_start) is not None
+    return any(
+        pattern.search(text, 0, action_start) is not None
+        for pattern in (_ALLOWED_QUALIFIER_RE, _COORDINATED_NEGATION_RE)
+    )
 
 
 def flatten_text(value: Any) -> str:
@@ -60,10 +68,9 @@ def find_forbidden_actions(value: Any, extra_forbidden: list[str] | None = None)
         if normalized not in text:
             continue
         for match in re.finditer(re.escape(normalized), text):
-            if normalized.startswith(("rollback", "restart", "delete", "scale", "disable", "change", "modify")) and _has_allowed_qualifier(
-                text, match.start()
-            ):
+            if normalized.startswith(_MUTATING_ACTION_PREFIXES) and _has_allowed_qualifier(text, match.start()):
                 continue
+
             hits.append(phrase)
     return sorted(set(hits))
 
