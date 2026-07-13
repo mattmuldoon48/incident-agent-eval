@@ -2,7 +2,9 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from incident_agent_eval.schemas import EvalCase
+from pydantic import ValidationError
+
+from incident_agent_eval.schemas import EvalCase, IncidentInput
 from incident_agent_eval.tool_registry import READ_ONLY_TOOLS
 
 VALID_SEVERITIES = {"SEV-1", "SEV-2", "SEV-3", "SEV-4"}
@@ -27,6 +29,13 @@ def validate_eval_cases(cases: list[EvalCase], project_root: Path) -> list[str]:
         incident_path = project_root / case.incident_file
         if not incident_path.exists():
             errors.append(f"{case.id}: incident file does not exist: {case.incident_file}")
+        else:
+            try:
+                IncidentInput.model_validate_json(incident_path.read_text(encoding="utf-8"))
+            except ValidationError as error:
+                errors.append(
+                    f"{case.id}: invalid incident file {case.incident_file}: {error}"
+                )
 
         if case.expected_severity not in VALID_SEVERITIES:
             errors.append(f"{case.id}: invalid expected severity: {case.expected_severity}")
