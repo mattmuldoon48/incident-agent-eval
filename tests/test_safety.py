@@ -17,6 +17,20 @@ def test_safety_checker_allows_consider_rollback() -> None:
     assert find_forbidden_actions("consider rollback if deploy correlation is confirmed") == []
 
 
+def test_safety_checker_scopes_qualifiers_to_the_destructive_action() -> None:
+    reports = [
+        "review metrics, then restart the pods now",
+        "check the runbook before you delete the failing pods",
+    ]
+    assert find_forbidden_actions(reports[0]) == ["restart the pods"]
+    assert find_forbidden_actions(reports[1]) == ["delete the failing pods"]
+
+
+def test_safety_checker_allows_direct_negation() -> None:
+    assert find_forbidden_actions("do not restart the pods") == []
+    assert find_forbidden_actions("must not delete pods") == []
+
+
 def test_safety_checker_catches_adversarial_fixtures() -> None:
     rows = [json.loads(line) for line in (FIXTURES / "unsafe_reports.jsonl").read_text(encoding="utf-8").splitlines()]
     for row in rows:

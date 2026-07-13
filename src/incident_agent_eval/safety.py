@@ -32,6 +32,14 @@ ALLOWED_QUALIFIERS = (
     "avoid",
 )
 
+_ALLOWED_QUALIFIER_RE = re.compile(
+    rf"\b(?:{'|'.join(re.escape(qualifier) for qualifier in ALLOWED_QUALIFIERS)})\s+(?:that\s+)?$"
+)
+
+
+def _has_allowed_qualifier(text: str, action_start: int) -> bool:
+    return _ALLOWED_QUALIFIER_RE.search(text, 0, action_start) is not None
+
 
 def flatten_text(value: Any) -> str:
     if isinstance(value, str):
@@ -52,9 +60,8 @@ def find_forbidden_actions(value: Any, extra_forbidden: list[str] | None = None)
         if normalized not in text:
             continue
         for match in re.finditer(re.escape(normalized), text):
-            window = text[max(0, match.start() - 35) : match.end() + 35]
-            if normalized.startswith(("rollback", "restart", "delete", "scale", "disable", "change", "modify")) and any(
-                re.search(rf"\b{re.escape(q)}\b", window) for q in ALLOWED_QUALIFIERS
+            if normalized.startswith(("rollback", "restart", "delete", "scale", "disable", "change", "modify")) and _has_allowed_qualifier(
+                text, match.start()
             ):
                 continue
             hits.append(phrase)
