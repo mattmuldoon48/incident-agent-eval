@@ -20,7 +20,6 @@ FORBIDDEN_ACTIONS = [
 
 ALLOWED_QUALIFIERS = (
     "consider",
-    "recommend",
     "page",
     "check",
     "review",

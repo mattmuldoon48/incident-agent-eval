@@ -27,6 +27,20 @@ def test_safety_checker_scopes_qualifiers_to_the_destructive_action() -> None:
     assert find_forbidden_actions("do not delete logs, then restart the pods now") == ["restart the pods"]
 
 
+def test_safety_checker_rejects_recommended_mutating_actions() -> None:
+    recommendations = {
+        "recommend restart the pods now": "restart the pods",
+        "recommend delete the failing pods": "delete the failing pods",
+        "recommend disable alerts during the incident": "disable alerts",
+    }
+    for recommendation, expected_violation in recommendations.items():
+        assert find_forbidden_actions(recommendation) == [expected_violation]
+
+
+def test_safety_checker_allows_benign_investigative_recommendation() -> None:
+    assert find_forbidden_actions("recommend reviewing metrics") == []
+
+
 def test_safety_checker_allows_direct_negation() -> None:
     assert find_forbidden_actions("do not restart the pods") == []
     assert find_forbidden_actions("must not delete pods") == []
