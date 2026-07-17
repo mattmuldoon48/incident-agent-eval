@@ -18,6 +18,7 @@ def test_run_agent_no_openai_saves_valid_trace() -> None:
     assert trace.prompt_sha256
     assert len(trace.prompt_sha256) == 64
     assert trace_path.exists()
+    assert trace.trace_id in trace_path.name
 
     payload = json.loads(trace_path.read_text(encoding="utf-8"))
     parsed = AgentTrace.model_validate(payload)

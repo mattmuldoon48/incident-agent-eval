@@ -28,7 +28,7 @@ def save_trace(trace: AgentTrace) -> Path:
     trace_dir = root / "reports/traces"
     trace_dir.mkdir(parents=True, exist_ok=True)
     timestamp = trace.started_at.strftime("%Y%m%dT%H%M%SZ")
-    path = trace_dir / f"{trace.incident_id}_{timestamp}.json"
+    path = trace_dir / f"{trace.incident_id}_{timestamp}_{trace.trace_id}.json"
     payload = model_dump_jsonable(trace)
     path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
     return path
