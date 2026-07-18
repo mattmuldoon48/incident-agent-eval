@@ -10,6 +10,8 @@ reports/traces/*.json
 reports/eval_runs/*.json
 reports/eval_runs/*.csv
 reports/eval_runs/*.md
+reports/security_eval/*_20*.json
+reports/security_eval/*_20*.csv
 docs/interview_notes.md
 docs/project_writeup.md
 dist/

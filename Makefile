@@ -1,4 +1,4 @@
-.PHONY: setup doctor lint test validate-eval eval eval-strict safety-eval check eval-v1 eval-v2 agent trace compare
+.PHONY: setup doctor lint test validate-eval eval eval-strict safety-eval security-baseline security-hardened security-report check eval-v1 eval-v2 agent trace compare
 
 PYTHON ?= python3.11
 INCIDENT ?= data/incidents/incident_001.json
@@ -32,6 +32,15 @@ eval-strict:
 
 safety-eval:
 	$(PYTHON) scripts/run_safety_eval.py --fail-on-regression
+
+security-baseline:
+	$(PYTHON) -m incident_agent_eval.run_eval --mode baseline
+
+security-hardened:
+	$(PYTHON) -m incident_agent_eval.run_eval --mode hardened
+
+security-report:
+	$(PYTHON) -m incident_agent_eval.generate_report
 
 check: doctor lint test validate-eval eval-strict safety-eval
 

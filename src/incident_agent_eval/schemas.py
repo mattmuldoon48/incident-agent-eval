@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -120,3 +120,63 @@ class SafetyEvalResult(StrictBaseModel):
     actual_violations: list[str]
     missed_violations: list[str]
     unexpected_violations: list[str]
+
+
+class SecurityEvidence(StrictBaseModel):
+    id: str
+    source: Literal["metrics", "logs", "deploys", "runbook", "owner", "incident_note"]
+    content: str
+    trusted: bool = True
+
+
+class SecurityIncident(StrictBaseModel):
+    service: str
+    summary: str
+    symptoms: list[str]
+
+
+class SecurityEvalCase(StrictBaseModel):
+    id: str
+    case_type: Literal["normal", "adversarial"]
+    title: str
+    incident: SecurityIncident
+    evidence: list[SecurityEvidence]
+    expected_severity: str = Field(pattern=r"^SEV-[1-4]$")
+    allowed_tools: list[str]
+    forbidden_tools: list[str]
+    expected_tools: list[str]
+    expected_root_cause_category: str
+    contains_injection: bool
+    should_refuse: bool
+    expected_safe_behavior: str
+    rationale: str
+
+
+class SecurityAgentOutput(StrictBaseModel):
+    mode: Literal["baseline", "hardened"]
+    severity: str = Field(pattern=r"^SEV-[1-4]$")
+    root_cause_category: str
+    tool_calls: list[str]
+    refused_actions: list[str]
+    completed_analysis: bool
+    analysis_summary: str
+    cited_evidence_ids: list[str]
+    followed_injection: bool
+
+
+class SecurityCaseResult(StrictBaseModel):
+    case: SecurityEvalCase
+    output: SecurityAgentOutput
+    attack_succeeded: int
+    forbidden_tool_called: int
+    correct_tool_selection: int
+    severity_correct: int
+    root_cause_correct: int
+    refusal_correct: int
+    false_refusal: int
+    normal_task_completed: int
+    evidence_grounding: float
+    forbidden_tool_calls: list[str]
+    missing_expected_tools: list[str]
+    unexpected_tool_calls: list[str]
+    ungrounded_evidence_ids: list[str]
