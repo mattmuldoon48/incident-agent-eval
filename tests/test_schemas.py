@@ -15,6 +15,24 @@ def test_incident_input_validates() -> None:
     assert incident.service == "checkout-api"
 
 
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("id", ""), ("service", ""), ("summary", ""), ("symptoms", [])],
+)
+def test_incident_input_rejects_empty_required_fields(field, value) -> None:
+    payload = {
+        "id": "incident_test",
+        "service": "checkout-api",
+        "summary": "Elevated errors",
+        "symptoms": ["5xx increased"],
+        "started_at": "2026-05-24T14:05:00Z",
+    }
+    payload[field] = value
+
+    with pytest.raises(ValidationError, match="at least 1"):
+        IncidentInput(**payload)
+
+
 def test_incident_input_rejects_unknown_fields() -> None:
     with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
         IncidentInput(

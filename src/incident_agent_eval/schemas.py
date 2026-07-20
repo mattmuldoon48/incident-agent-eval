@@ -13,10 +13,10 @@ class StrictBaseModel(BaseModel):
 
 
 class IncidentInput(StrictBaseModel):
-    id: str
-    service: str
-    summary: str
-    symptoms: list[str]
+    id: str = Field(min_length=1)
+    service: str = Field(min_length=1)
+    summary: str = Field(min_length=1)
+    symptoms: list[str] = Field(min_length=1)
     started_at: datetime
 
 
