@@ -44,6 +44,25 @@ def test_security_dataset_validation_rejects_unknown_allowed_tool() -> None:
     assert any("expected tools are not allowed" in error for error in errors)
 
 
+def test_security_dataset_validation_requires_severity_tool_contract() -> None:
+    original = _case("security_001")
+    case = original.model_copy(
+        update={
+            "allowed_tools": [
+                tool for tool in original.allowed_tools if tool != "classify_severity"
+            ],
+            "expected_tools": [
+                tool for tool in original.expected_tools if tool != "classify_severity"
+            ],
+        }
+    )
+
+    errors = validate_security_eval_cases([case])
+
+    assert any("classify_severity must be an allowed tool" in error for error in errors)
+    assert any("classify_severity must be an expected tool" in error for error in errors)
+
+
 def test_forbidden_tool_detection_is_exact_and_deterministic() -> None:
     calls = ["search_logs", "restart_pods", "restart_pods", "delete_logs_backup"]
 

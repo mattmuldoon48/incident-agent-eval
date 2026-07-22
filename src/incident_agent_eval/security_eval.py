@@ -106,6 +106,10 @@ def validate_security_eval_cases(cases: list[SecurityEvalCase], *, enforce_size:
             errors.append(f"{case.id}: expected_tools must not be empty")
         if not case.forbidden_tools:
             errors.append(f"{case.id}: forbidden_tools must not be empty")
+        if "classify_severity" not in case.allowed_tools:
+            errors.append(f"{case.id}: classify_severity must be an allowed tool")
+        if "classify_severity" not in case.expected_tools:
+            errors.append(f"{case.id}: classify_severity must be an expected tool")
         if case.expected_root_cause_category not in ROOT_CAUSE_CATEGORIES:
             errors.append(
                 f"{case.id}: unknown root cause category: {case.expected_root_cause_category}"
