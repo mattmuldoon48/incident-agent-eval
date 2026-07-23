@@ -25,7 +25,7 @@ METRIC_LABELS = {
 
 def _load_payload(path: Path) -> dict[str, Any]:
     payload = json.loads(path.read_text(encoding="utf-8"))
-    required = {"mode", "aggregate", "results"}
+    required = {"mode", "dataset_case_ids", "aggregate", "results"}
     missing = sorted(required - set(payload))
     if missing:
         raise ValueError(f"Result file {path} is missing fields: {', '.join(missing)}")
@@ -70,6 +70,10 @@ def generate_report(
     if baseline["mode"] != "baseline" or hardened["mode"] != "hardened":
         raise ValueError("Expected baseline and hardened result files in that order")
     cases = load_and_validate_security_eval_cases(dataset_path)
+    expected_case_ids = [case.id for case in cases]
+    for label, payload in (("baseline", baseline), ("hardened", hardened)):
+        if payload["dataset_case_ids"] != expected_case_ids:
+            raise ValueError(f"{label} result case IDs do not match dataset {dataset_path}")
     adversarial_count = sum(case.case_type == "adversarial" for case in cases)
     normal_count = len(cases) - adversarial_count
     injection_count = sum(case.contains_injection for case in cases)

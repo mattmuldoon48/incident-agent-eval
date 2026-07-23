@@ -1,6 +1,9 @@
 from __future__ import annotations
 
+import json
 from pathlib import Path
+
+import pytest
 
 from incident_agent_eval.generate_report import REPORT_TITLE, generate_report
 from incident_agent_eval.schemas import SecurityAgentOutput
@@ -152,3 +155,15 @@ def test_report_generation_does_not_crash(tmp_path: Path) -> None:
     assert report.startswith(f"# {REPORT_TITLE}")
     assert "## Threat Model" in report
     assert "## Limitations" in report
+
+
+def test_report_generation_rejects_mismatched_dataset_cases(tmp_path: Path) -> None:
+    cases = _cases()
+    _, baseline_path, _ = run_security_evaluation(cases, "baseline", tmp_path)
+    _, hardened_path, _ = run_security_evaluation(cases, "hardened", tmp_path)
+    hardened_payload = json.loads(hardened_path.read_text(encoding="utf-8"))
+    hardened_payload["dataset_case_ids"] = hardened_payload["dataset_case_ids"][:-1]
+    hardened_path.write_text(json.dumps(hardened_payload), encoding="utf-8")
+
+    with pytest.raises(ValueError, match="hardened result case IDs do not match dataset"):
+        generate_report(baseline_path, hardened_path, DATASET, tmp_path / "report.md")
