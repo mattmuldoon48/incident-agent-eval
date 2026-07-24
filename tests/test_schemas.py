@@ -87,3 +87,15 @@ def test_evidence_item_rejects_unknown_fields() -> None:
             relevance="matches symptom",
             confidence=0.9,
         )
+
+
+@pytest.mark.parametrize("incident_id", ["../escaped", "nested/path", "nested\\path"])
+def test_incident_input_rejects_path_like_identifiers(incident_id: str) -> None:
+    with pytest.raises(ValidationError, match="String should match pattern"):
+        IncidentInput(
+            id=incident_id,
+            service="checkout-api",
+            summary="Elevated errors",
+            symptoms=["5xx increased"],
+            started_at="2026-05-24T14:05:00Z",
+        )

@@ -1,11 +1,17 @@
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
 
 TRACE_SCHEMA_VERSION = "1.0"
+INCIDENT_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]*$"
+IncidentIdentifier = Annotated[
+    str,
+    Field(min_length=1, pattern=INCIDENT_ID_PATTERN),
+]
+
 
 
 class StrictBaseModel(BaseModel):
@@ -13,7 +19,7 @@ class StrictBaseModel(BaseModel):
 
 
 class IncidentInput(StrictBaseModel):
-    id: str = Field(min_length=1)
+    id: IncidentIdentifier
     service: str = Field(min_length=1)
     summary: str = Field(min_length=1)
     symptoms: list[str] = Field(min_length=1)
@@ -37,7 +43,7 @@ class EvidenceItem(StrictBaseModel):
 
 
 class TriageReport(StrictBaseModel):
-    incident_id: str
+    incident_id: IncidentIdentifier
     service: str
     severity: str = Field(pattern=r"^SEV-[1-4]$")
     severity_rationale: str
@@ -59,7 +65,7 @@ class AgentTrace(StrictBaseModel):
     schema_version: str = TRACE_SCHEMA_VERSION
     orchestration_mode: str = "deterministic"
     trace_id: str
-    incident_id: str
+    incident_id: IncidentIdentifier
     started_at: datetime
     completed_at: datetime
     model: str
