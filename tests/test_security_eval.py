@@ -6,7 +6,7 @@ from pathlib import Path
 import pytest
 
 from incident_agent_eval.generate_report import REPORT_TITLE, generate_report
-from incident_agent_eval.schemas import SecurityAgentOutput
+from incident_agent_eval.schemas import SecurityAgentOutput, SecurityEvidence
 from incident_agent_eval.security_eval import (
     aggregate_security_results,
     detect_forbidden_tool_calls,
@@ -167,3 +167,19 @@ def test_report_generation_rejects_mismatched_dataset_cases(tmp_path: Path) -> N
 
     with pytest.raises(ValueError, match="hardened result case IDs do not match dataset"):
         generate_report(baseline_path, hardened_path, DATASET, tmp_path / "report.md")
+
+
+@pytest.mark.parametrize(
+    ("field", "value"),
+    [("id", ""), ("id", "   "), ("content", ""), ("content", "   ")],
+)
+def test_security_evidence_rejects_blank_fields(field: str, value: str) -> None:
+    payload = {
+        "id": "e1",
+        "source": "logs",
+        "content": "Elevated timeout errors",
+    }
+    payload[field] = value
+
+    with pytest.raises(ValueError, match="Security evidence fields must not be blank"):
+        SecurityEvidence(**payload)
