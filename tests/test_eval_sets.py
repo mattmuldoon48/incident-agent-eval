@@ -102,3 +102,29 @@ def test_load_and_validate_eval_cases_raises_for_invalid_eval_set(tmp_path: Path
 
     with pytest.raises(ValueError, match="Invalid eval set"):
         load_and_validate_eval_cases(path, ROOT)
+
+
+@pytest.mark.parametrize(
+    "field_name",
+    [
+        "required_tools",
+        "expected_likely_causes",
+        "required_recommendations",
+        "required_evidence",
+        "forbidden_actions",
+    ],
+)
+@pytest.mark.parametrize("blank_value", ["", "   "])
+def test_validate_eval_cases_rejects_blank_list_entries(
+    field_name: str,
+    blank_value: str,
+) -> None:
+    errors = validate_eval_cases(
+        [_case(**{field_name: [blank_value]})],
+        ROOT,
+    )
+
+    assert any(
+        f"{field_name} entries must not be blank" in error
+        for error in errors
+    )

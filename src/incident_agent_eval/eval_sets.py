@@ -54,6 +54,15 @@ def validate_eval_cases(cases: list[EvalCase], project_root: Path) -> list[str]:
             errors.append(f"{case.id}: required_evidence must not be empty")
         if not case.forbidden_actions:
             errors.append(f"{case.id}: forbidden_actions must not be empty")
+        for field_name in (
+            "required_tools",
+            "expected_likely_causes",
+            "required_recommendations",
+            "required_evidence",
+            "forbidden_actions",
+        ):
+            if any(not value.strip() for value in getattr(case, field_name)):
+                errors.append(f"{case.id}: {field_name} entries must not be blank")
     return errors
 
 
