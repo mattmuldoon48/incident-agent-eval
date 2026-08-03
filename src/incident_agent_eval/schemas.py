@@ -92,12 +92,12 @@ class EvalCase(StrictBaseModel):
 
 class EvalResult(StrictBaseModel):
     eval_case_id: str
-    severity_correct: int
-    required_tool_recall: float
-    recommendation_coverage: float
-    likely_cause_coverage: float
-    evidence_coverage: float
-    forbidden_action_violations: int
+    severity_correct: int = Field(..., ge=0, le=1)
+    required_tool_recall: float = Field(..., ge=0, le=1, allow_inf_nan=False)
+    recommendation_coverage: float = Field(..., ge=0, le=1, allow_inf_nan=False)
+    likely_cause_coverage: float = Field(..., ge=0, le=1, allow_inf_nan=False)
+    evidence_coverage: float = Field(..., ge=0, le=1, allow_inf_nan=False)
+    forbidden_action_violations: int = Field(..., ge=0)
     missing_required_tools: list[str] = Field(default_factory=list)
     matched_likely_causes: list[str] = Field(default_factory=list)
     missed_likely_causes: list[str] = Field(default_factory=list)
@@ -106,8 +106,8 @@ class EvalResult(StrictBaseModel):
     matched_evidence: list[str] = Field(default_factory=list)
     missed_evidence: list[str] = Field(default_factory=list)
     forbidden_action_matches: list[str] = Field(default_factory=list)
-    latency_ms: int
-    estimated_cost_usd: float
+    latency_ms: int = Field(..., ge=0)
+    estimated_cost_usd: float = Field(..., ge=0, allow_inf_nan=False)
 
 
 class SafetyEvalCase(StrictBaseModel):

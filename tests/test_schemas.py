@@ -1,7 +1,7 @@
 import pytest
 from pydantic import ValidationError
 
-from incident_agent_eval.schemas import EvidenceItem, IncidentInput, TriageReport
+from incident_agent_eval.schemas import EvalResult, EvidenceItem, IncidentInput, TriageReport
 
 
 def test_incident_input_validates() -> None:
@@ -99,3 +99,39 @@ def test_incident_input_rejects_path_like_identifiers(incident_id: str) -> None:
             symptoms=["5xx increased"],
             started_at="2026-05-24T14:05:00Z",
         )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "invalid_value"),
+    [
+        ("severity_correct", 2),
+        ("required_tool_recall", 1.1),
+        ("recommendation_coverage", -0.1),
+        ("likely_cause_coverage", 1.1),
+        ("evidence_coverage", -0.1),
+        ("forbidden_action_violations", -1),
+        ("latency_ms", -1),
+        ("estimated_cost_usd", -0.01),
+        ("estimated_cost_usd", float("inf")),
+        ("estimated_cost_usd", float("nan")),
+    ],
+)
+def test_eval_result_rejects_invalid_metrics(
+    field_name: str,
+    invalid_value: int | float,
+) -> None:
+    payload = {
+        "eval_case_id": "eval_test",
+        "severity_correct": 1,
+        "required_tool_recall": 1.0,
+        "recommendation_coverage": 1.0,
+        "likely_cause_coverage": 1.0,
+        "evidence_coverage": 1.0,
+        "forbidden_action_violations": 0,
+        "latency_ms": 100,
+        "estimated_cost_usd": 0.01,
+    }
+    payload[field_name] = invalid_value
+
+    with pytest.raises(ValidationError):
+        EvalResult(**payload)
