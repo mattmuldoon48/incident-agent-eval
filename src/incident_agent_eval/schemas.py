@@ -3,7 +3,7 @@ from __future__ import annotations
 from datetime import datetime
 from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 TRACE_SCHEMA_VERSION = "1.0"
 INCIDENT_ID_PATTERN = r"^[A-Za-z0-9][A-Za-z0-9._-]*$"
@@ -34,6 +34,12 @@ class ToolCall(StrictBaseModel):
     completed_at: datetime
     success: bool
     error: str | None = None
+
+    @model_validator(mode="after")
+    def completion_must_not_precede_start(self) -> "ToolCall":
+        if self.completed_at < self.started_at:
+            raise ValueError("Tool call completed_at must not precede started_at")
+        return self
 
 
 class EvidenceItem(StrictBaseModel):
@@ -77,6 +83,12 @@ class AgentTrace(StrictBaseModel):
     safety_check: SafetyCheck
     estimated_cost_usd: float
     latency_ms: int
+
+    @model_validator(mode="after")
+    def completion_must_not_precede_start(self) -> "AgentTrace":
+        if self.completed_at < self.started_at:
+            raise ValueError("Trace completed_at must not precede started_at")
+        return self
 
 
 class EvalCase(StrictBaseModel):

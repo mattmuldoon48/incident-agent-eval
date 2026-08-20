@@ -1,7 +1,14 @@
 import pytest
 from pydantic import ValidationError
 
-from incident_agent_eval.schemas import EvalResult, EvidenceItem, IncidentInput, TriageReport
+from incident_agent_eval.schemas import (
+    AgentTrace,
+    EvalResult,
+    EvidenceItem,
+    IncidentInput,
+    ToolCall,
+    TriageReport,
+)
 
 
 def test_incident_input_validates() -> None:
@@ -42,6 +49,49 @@ def test_incident_input_rejects_unknown_fields() -> None:
             symptoms=["5xx increased"],
             started_at="2026-05-24T14:05:00Z",
             owner="Checkout Platform",
+        )
+
+
+def test_tool_call_rejects_completion_before_start() -> None:
+    with pytest.raises(ValidationError, match="completed_at must not precede started_at"):
+        ToolCall(
+            tool_name="search_logs",
+            args={},
+            result_summary="No matching errors",
+            started_at="2026-05-24T14:06:00Z",
+            completed_at="2026-05-24T14:05:00Z",
+            success=True,
+        )
+
+
+def test_agent_trace_rejects_completion_before_start() -> None:
+    with pytest.raises(ValidationError, match="completed_at must not precede started_at"):
+        AgentTrace(
+            trace_id="trace_test",
+            incident_id="incident_test",
+            started_at="2026-05-24T14:06:00Z",
+            completed_at="2026-05-24T14:05:00Z",
+            model="gpt-4.1-mini",
+            prompt_version="triage_agent_v1",
+            prompt_sha256="a" * 64,
+            used_openai=False,
+            tool_calls=[],
+            final_report={
+                "incident_id": "incident_test",
+                "service": "checkout-api",
+                "severity": "SEV-2",
+                "severity_rationale": "Material impact",
+                "likely_causes": ["recent deployment regression"],
+                "evidence": [],
+                "recommended_next_actions": ["Page the owner"],
+                "escalation_target": "Checkout Platform",
+                "customer_update_draft": "We are investigating.",
+                "safety_notes": ["Read-only"],
+                "tools_used": [],
+            },
+            safety_check={"safe": True, "violations": []},
+            estimated_cost_usd=0,
+            latency_ms=0,
         )
 
 
