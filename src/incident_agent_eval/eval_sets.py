@@ -21,6 +21,9 @@ def load_eval_cases(eval_path: Path) -> list[EvalCase]:
 def validate_eval_cases(cases: list[EvalCase], project_root: Path) -> list[str]:
     errors: list[str] = []
     seen_ids: set[str] = set()
+    if not cases:
+        errors.append("eval set must contain at least one case")
+
     for case in cases:
         if case.id in seen_ids:
             errors.append(f"{case.id}: duplicate eval case id")

@@ -27,6 +27,17 @@ def test_validate_eval_cases_accepts_valid_case() -> None:
     assert validate_eval_cases([_case()], ROOT) == []
 
 
+def test_validate_eval_cases_rejects_empty_eval_set(tmp_path: Path) -> None:
+    path = tmp_path / "empty_eval.jsonl"
+    path.write_text("", encoding="utf-8")
+
+    with pytest.raises(
+        ValueError,
+        match="eval set must contain at least one case",
+    ):
+        load_and_validate_eval_cases(path, ROOT)
+
+
 def test_validate_eval_cases_rejects_unknown_tool() -> None:
     errors = validate_eval_cases([_case(required_tools=["restart_pods"])], ROOT)
     assert "unknown required tools" in errors[0]
