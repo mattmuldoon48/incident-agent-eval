@@ -40,6 +40,32 @@ def test_incident_input_rejects_empty_required_fields(field, value) -> None:
         IncidentInput(**payload)
 
 
+@pytest.mark.parametrize(
+    ("field", "value", "message"),
+    [
+        ("service", "   ", "service must not be blank"),
+        ("summary", "\t", "summary must not be blank"),
+        ("symptoms", ["5xx increased", " "], "symptoms entries must not be blank"),
+    ],
+)
+def test_incident_input_rejects_whitespace_required_fields(
+    field,
+    value,
+    message,
+) -> None:
+    payload = {
+        "id": "incident_test",
+        "service": "checkout-api",
+        "summary": "Elevated errors",
+        "symptoms": ["5xx increased"],
+        "started_at": "2026-05-24T14:05:00Z",
+    }
+    payload[field] = value
+
+    with pytest.raises(ValidationError, match=message):
+        IncidentInput(**payload)
+
+
 def test_incident_input_rejects_unknown_fields() -> None:
     with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
         IncidentInput(

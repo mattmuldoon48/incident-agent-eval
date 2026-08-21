@@ -25,6 +25,20 @@ class IncidentInput(StrictBaseModel):
     symptoms: list[str] = Field(min_length=1)
     started_at: datetime
 
+    @field_validator("service", "summary")
+    @classmethod
+    def required_text_must_not_be_blank(cls, value: str, info) -> str:
+        if not value.strip():
+            raise ValueError(f"{info.field_name} must not be blank")
+        return value
+
+    @field_validator("symptoms")
+    @classmethod
+    def symptom_entries_must_not_be_blank(cls, value: list[str]) -> list[str]:
+        if any(not symptom.strip() for symptom in value):
+            raise ValueError("symptoms entries must not be blank")
+        return value
+
 
 class ToolCall(StrictBaseModel):
     tool_name: str
