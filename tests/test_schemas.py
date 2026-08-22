@@ -90,6 +90,30 @@ def test_tool_call_rejects_completion_before_start() -> None:
         )
 
 
+@pytest.mark.parametrize(
+    ("success", "error", "message"),
+    [
+        (False, None, "Failed tool calls must contain an error"),
+        (True, "unexpected timeout", "Successful tool calls must not contain an error"),
+    ],
+)
+def test_tool_call_error_must_match_success_state(
+    success: bool,
+    error: str | None,
+    message: str,
+) -> None:
+    with pytest.raises(ValidationError, match=message):
+        ToolCall(
+            tool_name="search_logs",
+            args={},
+            result_summary="Tool invocation completed",
+            started_at="2026-05-24T14:05:00Z",
+            completed_at="2026-05-24T14:06:00Z",
+            success=success,
+            error=error,
+        )
+
+
 def test_agent_trace_rejects_completion_before_start() -> None:
     with pytest.raises(ValidationError, match="completed_at must not precede started_at"):
         AgentTrace(

@@ -55,6 +55,14 @@ class ToolCall(StrictBaseModel):
             raise ValueError("Tool call completed_at must not precede started_at")
         return self
 
+    @model_validator(mode="after")
+    def error_must_match_success_state(self) -> "ToolCall":
+        if self.success and self.error is not None:
+            raise ValueError("Successful tool calls must not contain an error")
+        if not self.success and self.error is None:
+            raise ValueError("Failed tool calls must contain an error")
+        return self
+
 
 class EvidenceItem(StrictBaseModel):
     source: str
