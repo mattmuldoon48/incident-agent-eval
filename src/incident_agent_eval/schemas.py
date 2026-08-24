@@ -103,8 +103,8 @@ class AgentTrace(StrictBaseModel):
     tool_calls: list[ToolCall]
     final_report: TriageReport
     safety_check: SafetyCheck
-    estimated_cost_usd: float
-    latency_ms: int
+    estimated_cost_usd: float = Field(..., ge=0, allow_inf_nan=False)
+    latency_ms: int = Field(..., ge=0)
 
     @model_validator(mode="after")
     def completion_must_not_precede_start(self) -> "AgentTrace":

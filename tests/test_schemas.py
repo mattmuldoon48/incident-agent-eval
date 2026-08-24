@@ -11,6 +11,38 @@ from incident_agent_eval.schemas import (
 )
 
 
+def _agent_trace_payload(**overrides) -> dict:
+    payload = {
+        "trace_id": "trace_test",
+        "incident_id": "incident_test",
+        "started_at": "2026-05-24T14:05:00Z",
+        "completed_at": "2026-05-24T14:06:00Z",
+        "model": "gpt-4.1-mini",
+        "prompt_version": "triage_agent_v1",
+        "prompt_sha256": "a" * 64,
+        "used_openai": False,
+        "tool_calls": [],
+        "final_report": {
+            "incident_id": "incident_test",
+            "service": "checkout-api",
+            "severity": "SEV-2",
+            "severity_rationale": "Material impact",
+            "likely_causes": ["recent deployment regression"],
+            "evidence": [],
+            "recommended_next_actions": ["Page the owner"],
+            "escalation_target": "Checkout Platform",
+            "customer_update_draft": "We are investigating.",
+            "safety_notes": ["Read-only"],
+            "tools_used": [],
+        },
+        "safety_check": {"safe": True, "violations": []},
+        "estimated_cost_usd": 0,
+        "latency_ms": 0,
+    }
+    payload.update(overrides)
+    return payload
+
+
 def test_incident_input_validates() -> None:
     incident = IncidentInput(
         id="incident_test",
@@ -117,32 +149,28 @@ def test_tool_call_error_must_match_success_state(
 def test_agent_trace_rejects_completion_before_start() -> None:
     with pytest.raises(ValidationError, match="completed_at must not precede started_at"):
         AgentTrace(
-            trace_id="trace_test",
-            incident_id="incident_test",
-            started_at="2026-05-24T14:06:00Z",
-            completed_at="2026-05-24T14:05:00Z",
-            model="gpt-4.1-mini",
-            prompt_version="triage_agent_v1",
-            prompt_sha256="a" * 64,
-            used_openai=False,
-            tool_calls=[],
-            final_report={
-                "incident_id": "incident_test",
-                "service": "checkout-api",
-                "severity": "SEV-2",
-                "severity_rationale": "Material impact",
-                "likely_causes": ["recent deployment regression"],
-                "evidence": [],
-                "recommended_next_actions": ["Page the owner"],
-                "escalation_target": "Checkout Platform",
-                "customer_update_draft": "We are investigating.",
-                "safety_notes": ["Read-only"],
-                "tools_used": [],
-            },
-            safety_check={"safe": True, "violations": []},
-            estimated_cost_usd=0,
-            latency_ms=0,
+            **_agent_trace_payload(
+                started_at="2026-05-24T14:06:00Z",
+                completed_at="2026-05-24T14:05:00Z",
+            )
         )
+
+
+@pytest.mark.parametrize(
+    ("field_name", "invalid_value"),
+    [
+        ("latency_ms", -1),
+        ("estimated_cost_usd", -0.01),
+        ("estimated_cost_usd", float("inf")),
+        ("estimated_cost_usd", float("nan")),
+    ],
+)
+def test_agent_trace_rejects_invalid_runtime_metrics(
+    field_name: str,
+    invalid_value: int | float,
+) -> None:
+    with pytest.raises(ValidationError):
+        AgentTrace(**_agent_trace_payload(**{field_name: invalid_value}))
 
 
 def test_triage_report_validates() -> None:
