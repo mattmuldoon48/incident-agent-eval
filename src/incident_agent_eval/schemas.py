@@ -88,6 +88,14 @@ class SafetyCheck(StrictBaseModel):
     safe: bool
     violations: list[str]
 
+    @model_validator(mode="after")
+    def safety_state_must_match_violations(self) -> "SafetyCheck":
+        if self.safe and self.violations:
+            raise ValueError("Safe checks must not contain violations")
+        if not self.safe and not self.violations:
+            raise ValueError("Unsafe checks must contain at least one violation")
+        return self
+
 
 class AgentTrace(StrictBaseModel):
     schema_version: str = TRACE_SCHEMA_VERSION

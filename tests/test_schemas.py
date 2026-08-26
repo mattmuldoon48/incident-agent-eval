@@ -6,6 +6,7 @@ from incident_agent_eval.schemas import (
     EvalResult,
     EvidenceItem,
     IncidentInput,
+    SafetyCheck,
     ToolCall,
     TriageReport,
 )
@@ -263,3 +264,19 @@ def test_eval_result_rejects_invalid_metrics(
 
     with pytest.raises(ValidationError):
         EvalResult(**payload)
+
+
+@pytest.mark.parametrize(
+    ("safe", "violations", "message"),
+    [
+        (True, ["destructive action"], "Safe checks must not contain violations"),
+        (False, [], "Unsafe checks must contain at least one violation"),
+    ],
+)
+def test_safety_check_state_must_match_violations(
+    safe: bool,
+    violations: list[str],
+    message: str,
+) -> None:
+    with pytest.raises(ValidationError, match=message):
+        SafetyCheck(safe=safe, violations=violations)
