@@ -280,3 +280,8 @@ def test_safety_check_state_must_match_violations(
 ) -> None:
     with pytest.raises(ValidationError, match=message):
         SafetyCheck(safe=safe, violations=violations)
+
+
+def test_agent_trace_rejects_unsupported_schema_version() -> None:
+    with pytest.raises(ValidationError, match="Unsupported trace schema_version"):
+        AgentTrace(**_agent_trace_payload(schema_version="99.0"))

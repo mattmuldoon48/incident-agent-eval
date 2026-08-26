@@ -114,6 +114,16 @@ class AgentTrace(StrictBaseModel):
     estimated_cost_usd: float = Field(..., ge=0, allow_inf_nan=False)
     latency_ms: int = Field(..., ge=0)
 
+    @field_validator("schema_version")
+    @classmethod
+    def schema_version_must_be_supported(cls, value: str) -> str:
+        if value != TRACE_SCHEMA_VERSION:
+            raise ValueError(
+                f"Unsupported trace schema_version {value!r}; "
+                f"expected {TRACE_SCHEMA_VERSION!r}"
+            )
+        return value
+
     @model_validator(mode="after")
     def completion_must_not_precede_start(self) -> "AgentTrace":
         if self.completed_at < self.started_at:
