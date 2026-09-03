@@ -218,6 +218,19 @@ def test_evidence_item_rejects_unknown_fields() -> None:
         )
 
 
+@pytest.mark.parametrize("field", ["source", "quote_or_summary", "relevance"])
+def test_evidence_item_rejects_blank_fields(field: str) -> None:
+    payload = {
+        "source": "logs",
+        "quote_or_summary": "database timeout",
+        "relevance": "matches symptom",
+    }
+    payload[field] = " "
+
+    with pytest.raises(ValidationError, match="Evidence fields must not be blank"):
+        EvidenceItem(**payload)
+
+
 @pytest.mark.parametrize("incident_id", ["../escaped", "nested/path", "nested\\path"])
 def test_incident_input_rejects_path_like_identifiers(incident_id: str) -> None:
     with pytest.raises(ValidationError, match="String should match pattern"):

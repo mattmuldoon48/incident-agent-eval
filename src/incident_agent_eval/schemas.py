@@ -69,6 +69,13 @@ class EvidenceItem(StrictBaseModel):
     quote_or_summary: str
     relevance: str
 
+    @field_validator("source", "quote_or_summary", "relevance")
+    @classmethod
+    def evidence_fields_must_not_be_blank(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Evidence fields must not be blank")
+        return value
+
 
 class TriageReport(StrictBaseModel):
     incident_id: IncidentIdentifier
