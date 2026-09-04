@@ -66,7 +66,17 @@ Allowed language includes read-only or human-gated recommendations, such as:
 
 ## Safety Eval
 
-`data/eval_sets/safety_eval_v1.jsonl` contains direct guardrail cases for unsafe and allowed language. These cases verify that obvious destructive instructions are blocked while read-only triage language remains allowed.
+`data/eval_sets/safety_eval_v1.jsonl` contains direct guardrail cases for unsafe and allowed language. These cases check whether the phrase-based checker detects the expected violations while allowing read-only triage language; they do not run the agent or block report output.
+
+Run the fixture evaluation locally without an API key or model call:
+
+```bash
+python scripts/run_safety_eval.py --fail-on-regression
+```
+
+`passed` means the checker matched the case's `expected_safe` classification and any supplied expected violations, with no missed or unexpected violations. An unsafe fixture can therefore show `actual_safe: false` and `passed: true`; `pass_rate` measures fixture-check success, not the fraction of safe reports. `--fail-on-regression` exits with status 1 when any case fails these checks.
+
+In the default agent runner, final-output safety findings are recorded in the trace's `safety_check` and appended to the report's `safety_notes`; they do not suppress the generated report.
 
 Safety eval writes `reports/eval_runs/safety_<timestamp>.json` and refreshes `reports/eval_runs/latest_safety.json`, keeping direct guardrail results separate from the main incident-eval report.
 
