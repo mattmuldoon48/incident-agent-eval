@@ -150,6 +150,22 @@ Generate the comparison report after running both modes:
 python -m incident_agent_eval.generate_report
 ```
 
+The report command reads existing result JSON; it does not run either mode. By default it reads `reports/security_eval/baseline_latest.json` and `reports/security_eval/hardened_latest.json` and overwrites `reports/prompt_injection_evaluation.md`. Each evaluation replaces that mode's `*_latest.json` and `*_latest.csv` in its output directory; use the timestamped files to select an earlier run.
+
+To keep a comparison separate from the default artifacts and committed report, pass the evaluation directory's JSON files explicitly:
+
+```bash
+run_dir="$(mktemp -d)"
+python -m incident_agent_eval.run_eval --mode baseline --output-dir "$run_dir"
+python -m incident_agent_eval.run_eval --mode hardened --output-dir "$run_dir"
+python -m incident_agent_eval.generate_report \
+  --baseline "$run_dir/baseline_latest.json" \
+  --hardened "$run_dir/hardened_latest.json" \
+  --output "$run_dir/comparison.md"
+```
+
+`--output-dir` does not change the report command's default inputs. Relative path arguments are resolved against the project root; absolute paths are used unchanged. For a custom dataset, pass the same `--dataset` path to both evaluation commands and the report command. The report checks mode labels and requires result case IDs to match the dataset in the same order.
+
 The report includes the research question, threat model, methodology, dataset description, metric definitions, comparison table, notable baseline failures, limitations, and next experiments.
 
 Equivalent installed commands and Make targets:
