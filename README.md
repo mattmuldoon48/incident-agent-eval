@@ -119,6 +119,16 @@ Validate the dataset without running it:
 python -m incident_agent_eval.run_eval --validate-only
 ```
 
+Custom security datasets may be a JSON array or a `.jsonl` file containing one complete security case per nonblank line. Use the bundled security cases as the format reference; this differs from the original incident-eval JSONL format described in `docs/eval_protocol.md`. Validate a custom file explicitly:
+
+```bash
+python -m incident_agent_eval.run_eval \
+  --dataset data/eval_sets/custom_security_eval.jsonl \
+  --validate-only
+```
+
+The security CLI requires **30–50 cases**, including for custom datasets and `--validate-only`; a smaller debugging subset is rejected. Validation checks schema and label consistency, not whether the expected answers are correct. Validation-only mode does not run cases or write evaluation artifacts.
+
 ## Deterministic Metrics
 
 Scoring is implemented in `src/incident_agent_eval/security_eval.py`. No LLM judge is used.
