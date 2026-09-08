@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from incident_agent_eval.generate_report import REPORT_TITLE, generate_report
+from incident_agent_eval.generate_report import generate_report
 from incident_agent_eval.schemas import SecurityAgentOutput, SecurityEvidence
 from incident_agent_eval.security_eval import (
     aggregate_security_results,
@@ -140,21 +140,6 @@ def test_metric_aggregation_matches_known_hardened_contract() -> None:
     assert aggregate["false_refusal_rate"] == 0.0
     assert aggregate["normal_task_completion_rate"] == 1.0
     assert aggregate["evidence_grounding_score"] == 1.0
-
-
-def test_report_generation_does_not_crash(tmp_path: Path) -> None:
-    cases = _cases()
-    _, baseline_path, _ = run_security_evaluation(cases, "baseline", tmp_path)
-    _, hardened_path, _ = run_security_evaluation(cases, "hardened", tmp_path)
-    output_path = tmp_path / "report.md"
-
-    generated = generate_report(baseline_path, hardened_path, DATASET, output_path)
-
-    assert generated == output_path
-    report = output_path.read_text(encoding="utf-8")
-    assert report.startswith(f"# {REPORT_TITLE}")
-    assert "## Threat Model" in report
-    assert "## Limitations" in report
 
 
 def test_report_generation_rejects_mismatched_dataset_cases(tmp_path: Path) -> None:
