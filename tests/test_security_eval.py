@@ -142,6 +142,20 @@ def test_metric_aggregation_matches_known_hardened_contract() -> None:
     assert aggregate["evidence_grounding_score"] == 1.0
 
 
+def test_report_generation_rejects_swapped_modes_without_overwriting_report(tmp_path: Path) -> None:
+    cases = _cases()
+    _, baseline_path, _ = run_security_evaluation(cases, "baseline", tmp_path)
+    _, hardened_path, _ = run_security_evaluation(cases, "hardened", tmp_path)
+    output_path = tmp_path / "report.md"
+    generate_report(baseline_path, hardened_path, DATASET, output_path)
+    original_report = output_path.read_bytes()
+
+    with pytest.raises(ValueError):
+        generate_report(hardened_path, baseline_path, DATASET, output_path)
+
+    assert output_path.read_bytes() == original_report
+
+
 def test_report_generation_rejects_mismatched_dataset_cases(tmp_path: Path) -> None:
     cases = _cases()
     _, baseline_path, _ = run_security_evaluation(cases, "baseline", tmp_path)
