@@ -154,6 +154,8 @@ Each evaluation writes:
 - stable `baseline_latest.json` / `hardened_latest.json`;
 - stable `baseline_latest.csv` / `hardened_latest.csv`.
 
+In detailed JSON, `results[].output.tool_calls` lists tool names selected by the deterministic simulation, not evidence that tool functions ran or infrastructure was accessed. `results[].output.refused_actions` separately lists requested names rejected as outside the case's `allowed_tools`; CSV exports both fields as well. In hardened mode, an injected request for an allowed tool is ignored rather than recorded as a refusal, although trusted, non-instruction evidence may independently select that same tool. An empty `refused_actions` list therefore does not prove that an injected request was followed; inspect the selected tools and supporting evidence together.
+
 Generate the comparison report after running both modes:
 
 ```bash
