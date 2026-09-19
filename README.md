@@ -223,6 +223,16 @@ python scripts/run_safety_eval.py --fail-on-regression
 python scripts/inspect_trace.py --latest
 ```
 
+`inspect_trace.py` reads traces from the original incident-triage harness, not security-comparison or direct safety-eval result JSON. `--latest` selects the most recently modified JSON file in `reports/traces/`; it is not scoped to an incident or evaluation run. Neither security comparisons nor direct safety evals create these traces, so run the original agent or incident eval first if none exist.
+
+To inspect a particular run, pass the exact path printed by `run_agent.py` in its `Trace saved to ...` message:
+
+```bash
+python scripts/inspect_trace.py "/absolute/path/to/saved_trace.json"
+```
+
+For an original incident-eval run, its JSON report pairs `case_ids` with `trace_paths` in the same order. Choose the matching trace path rather than relying on `--latest`.
+
 The optional OpenAI path uses `OPENAI_API_KEY`; if it is absent, the original agent uses its local deterministic fallback. The new security comparison never requires the key.
 
 ## Tests and Quality
