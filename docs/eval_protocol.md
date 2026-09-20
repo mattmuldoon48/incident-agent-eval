@@ -24,6 +24,22 @@ Before adding a case, run validation-only mode to catch duplicate IDs, missing i
 python scripts/run_eval.py --validate-only
 ```
 
+## Run Selected Incident Cases
+
+These commands use the original incident JSONL evaluator, not the security-comparison command `python -m incident_agent_eval.run_eval`. Run them from the repository root after setup:
+
+```bash
+python scripts/run_eval.py --list-cases
+python scripts/run_eval.py --case-id eval_001 --case-id eval_003 --validate-only
+python scripts/run_eval.py --no-openai --case-id eval_001 --case-id eval_003
+```
+
+Repeat `--case-id` to select multiple eval IDs, not incident IDs. Selected cases retain dataset order, repeated IDs run only once, and unknown IDs fail. Omit the option to run the full set. `--no-openai` forces deterministic local generation even when an API key is configured.
+
+Use `--eval-set PATH` for another incident-eval JSONL file; relative paths resolve against the project root. The entire file and its referenced incidents are validated **before** filtering, so an invalid unselected case still fails. Listing and validation create no traces or evaluation reports; the validation success count reflects the selected cases.
+
+A filtered run's metrics and threshold checks cover only its selected cases. It replaces the same `reports/eval_runs/latest.json`, `latest.csv`, and `latest.md` as a full run; retain the timestamped report printed by the command when preserving a full-suite result.
+
 ## Incident Eval Metrics
 
 For each eval case, the runner produces one `EvalResult`.
