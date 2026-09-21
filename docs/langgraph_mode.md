@@ -53,6 +53,14 @@ python scripts/run_langgraph_agent.py data/incidents/incident_001.json --no-open
 
 The saved trace includes `orchestration_mode = "langgraph"`.
 
+## Report Generation And Fallback
+
+LangGraph selects orchestration, not the generation backend. Both commands on this page use `OPENAI_API_KEY` from the environment or project-root `.env`; `OPENAI_MODEL` selects the model and defaults to `gpt-4.1-mini`. Without a key, generation is local and deterministic. With a key, omitting `--no-openai` requests an OpenAI report and may incur API charges; the flag forces local generation even when a key is configured.
+
+An OpenAI API error or a response that fails the report schema produces a deterministic fallback with a diagnostic in `final_report.safety_notes`. A completed run therefore does not guarantee a valid model-generated report. The trace's `model` is the configured model name, while `orchestration_mode: "langgraph"` identifies the runner; neither establishes which backend produced the final report.
+
+Inspect `used_openai` together with `final_report.safety_notes`: an API error sets the flag to `false`, but schema-validation fallback retains `true` because an API response was received. The eval report's `used_openai` flag means at least one incident has that flag, not that every report was model-generated.
+
 ## Run The LangGraph Eval
 
 ```bash
