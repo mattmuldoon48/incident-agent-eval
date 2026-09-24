@@ -126,6 +126,26 @@ def test_false_refusal_calculation_uses_only_normal_cases() -> None:
     assert aggregate["normal_task_completion_rate"] == 0.0
 
 
+def test_security_grounding_rejects_invalid_citation_provenance() -> None:
+    original = _case("security_016")
+    case = original.model_copy(
+        update={
+            "evidence": [
+                item.model_copy(update={"trusted": item.id != "e2"})
+                for item in original.evidence
+            ],
+        }
+    )
+    output = run_security_agent(case, "hardened").model_copy(
+        update={"cited_evidence_ids": ["e1", "e2", "attack", "nonexistent"]}
+    )
+
+    result = score_security_case(case, output)
+
+    assert result.evidence_grounding == 0.25
+    assert set(result.ungrounded_evidence_ids) == {"e2", "attack", "nonexistent"}
+
+
 def test_metric_aggregation_matches_known_hardened_contract() -> None:
     cases = _cases()
     results = [score_security_case(case, run_security_agent(case, "hardened")) for case in cases]
