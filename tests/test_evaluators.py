@@ -92,6 +92,37 @@ def test_required_tool_recall_uses_trace_calls_not_report_claims() -> None:
     assert result.missing_required_tools == ["search_logs"]
 
 
+def test_required_tool_recall_counts_only_distinct_successful_tools() -> None:
+    case = EvalCase(
+        id="eval",
+        incident_file="data/incidents/incident_001.json",
+        expected_severity="SEV-2",
+        required_tools=["get_service_metrics", "search_logs"],
+        expected_likely_causes=["recent deployment regression"],
+        required_recommendations=["Page"],
+        required_evidence=["metrics.jsonl 5xx"],
+        forbidden_actions=[],
+    )
+    trace = _trace(
+        ["Page the owner"],
+        actual_tool_names=["get_service_metrics", "get_service_metrics", "search_logs"],
+    )
+    trace.tool_calls[-1] = trace.tool_calls[-1].model_copy(
+        update={"success": False, "error": "Log lookup timed out"}
+    )
+
+    failed = score_trace(case, trace)
+
+    assert failed.required_tool_recall == 0.5
+    assert failed.missing_required_tools == ["search_logs"]
+
+    trace.tool_calls.append(trace.tool_calls[-1].model_copy(update={"success": True, "error": None}))
+    recovered = score_trace(case, trace)
+
+    assert recovered.required_tool_recall == 1.0
+    assert recovered.missing_required_tools == []
+
+
 def test_forbidden_action_violations() -> None:
     case = EvalCase(
         id="eval",
