@@ -231,6 +231,12 @@ To inspect a particular run, pass the exact path printed by `run_agent.py` in it
 python scripts/inspect_trace.py "/absolute/path/to/saved_trace.json"
 ```
 
+The inspector displays a summary, not every saved field. To view tool arguments, the full `final_report` (including evidence and `safety_notes`), `latency_ms`, and `estimated_cost_usd`, open the same trace JSON directly:
+
+```bash
+python -m json.tool "/absolute/path/to/saved_trace.json"
+```
+
 For an original incident-eval run, its JSON report pairs `case_ids` with `trace_paths` in the same order. Choose the matching trace path rather than relying on `--latest`.
 
 The optional OpenAI path uses `OPENAI_API_KEY`; if it is absent, the original agent uses its local deterministic fallback. The new security comparison never requires the key.
