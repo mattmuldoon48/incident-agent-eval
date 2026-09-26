@@ -14,6 +14,12 @@ This project uses a small, local eval protocol for a bounded incident triage har
 
 Each incident JSON file is validated as an `IncidentInput`. Required fields are `id`, `service`, `summary`, `symptoms`, and `started_at`; `symptoms` is a list of observed signals, and `started_at` should be an ISO timestamp such as `2026-05-24T14:05:00Z`.
 
+### Observability fixture time window
+
+The original harness retrieves metrics, logs, and deploys from local fixtures using a fixed reference time of `2026-05-24T14:30:00Z`, not the current clock or the incident's `started_at`. Its agent requests a 90-minute lookback, so eligible event timestamps run from `2026-05-24T13:00:00Z` through `2026-05-24T14:30:00Z`, inclusive. Events outside that interval are excluded; service matching and, for logs, query matching still apply.
+
+When adding synthetic scenarios, keep observability timestamps inside this fixture window and use the incident's service name. Changing only `started_at` does not move the retrieval window. This limitation belongs to the original incident-triage harness, not the separate security-comparison dataset.
+
 ## Eval Case Format
 
 Each JSONL row is validated as an `EvalCase`. Required fields are `id`, `incident_file`, `expected_severity`, `required_tools`, `expected_likely_causes`, `required_recommendations`, `required_evidence`, and `forbidden_actions`; `incident_file` points to a local incident JSON path, and `expected_severity` must be one of `SEV-1` through `SEV-4`.
