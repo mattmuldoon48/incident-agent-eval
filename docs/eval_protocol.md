@@ -18,6 +18,8 @@ Each incident JSON file is validated as an `IncidentInput`. Required fields are 
 
 The original harness retrieves metrics, logs, and deploys from local fixtures using a fixed reference time of `2026-05-24T14:30:00Z`, not the current clock or the incident's `started_at`. Its agent requests a 90-minute lookback, so eligible event timestamps run from `2026-05-24T13:00:00Z` through `2026-05-24T14:30:00Z`, inclusive. Events outside that interval are excluded; service matching and, for logs, query matching still apply.
 
+Use timezone-aware observability timestamps (`Z` or an explicit UTC offset). Offsets are compared as instants: `2026-05-24T15:00:00+02:00` is the same inclusive lower boundary as `2026-05-24T13:00:00Z`, not an event after the reference time.
+
 When adding synthetic scenarios, keep observability timestamps inside this fixture window and use the incident's service name. Changing only `started_at` does not move the retrieval window. This limitation belongs to the original incident-triage harness, not the separate security-comparison dataset.
 
 ## Eval Case Format
