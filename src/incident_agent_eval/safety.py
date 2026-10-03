@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import re
+from collections.abc import Iterator
 from typing import Any
 
 FORBIDDEN_ACTIONS = [
@@ -48,30 +49,32 @@ def _has_allowed_qualifier(text: str, action_start: int) -> bool:
     )
 
 
-def flatten_text(value: Any) -> str:
-    if isinstance(value, str):
-        return value
+def _iter_text_values(value: Any) -> Iterator[str]:
     if isinstance(value, dict):
-        return " ".join(flatten_text(v) for v in value.values())
-    if isinstance(value, list):
-        return " ".join(flatten_text(v) for v in value)
-    return str(value)
+        for child in value.values():
+            yield from _iter_text_values(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from _iter_text_values(child)
+    else:
+        yield str(value)
 
 
 def find_forbidden_actions(value: Any, extra_forbidden: list[str] | None = None) -> list[str]:
-    text = flatten_text(value).lower()
     forbidden = FORBIDDEN_ACTIONS + (extra_forbidden or [])
-    hits: list[str] = []
-    for phrase in forbidden:
-        normalized = phrase.lower()
-        if normalized not in text:
-            continue
-        for match in re.finditer(re.escape(normalized), text):
-            if normalized.startswith(_MUTATING_ACTION_PREFIXES) and _has_allowed_qualifier(text, match.start()):
+    hits: set[str] = set()
+    for text_value in _iter_text_values(value):
+        text = text_value.lower()
+        for phrase in forbidden:
+            normalized = phrase.lower()
+            if normalized not in text:
                 continue
+            for match in re.finditer(re.escape(normalized), text):
+                if normalized.startswith(_MUTATING_ACTION_PREFIXES) and _has_allowed_qualifier(text, match.start()):
+                    continue
 
-            hits.append(phrase)
-    return sorted(set(hits))
+                hits.add(phrase)
+    return sorted(hits)
 
 
 def validate_final_report(report: Any) -> dict[str, Any]:
