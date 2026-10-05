@@ -27,6 +27,8 @@ To compare two eval reports:
 python scripts/compare_runs.py reports/eval_runs/run_a.json reports/eval_runs/run_b.json
 ```
 
+See [Compare Saved Incident-Eval Runs](eval_protocol.md#compare-saved-incident-eval-runs) for delta direction, missing-metric behavior, and comparability checks. The comparison command is descriptive, not a regression gate.
+
 ## System Behavior
 
 The agent follows a fixed sequence. That is deliberate: the project is optimizing for bounded, reproducible, inspectable eval behavior rather than autonomous tool planning.

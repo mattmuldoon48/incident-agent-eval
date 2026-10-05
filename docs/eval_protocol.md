@@ -69,6 +69,24 @@ The default regression thresholds are defined in `src/incident_agent_eval/evalua
 
 The deterministic fallback path is the CI/local regression gate. It exists so the repo can be verified without secrets or network calls. It should not be presented as independent model-quality evidence.
 
+## Compare Saved Incident-Eval Runs
+
+Compare retained timestamped reports from the original evaluator (`python scripts/run_eval.py`), with the first run as the reference and the second as the candidate. Replace the run-ID placeholders below and keep the quotes:
+
+```bash
+python scripts/compare_runs.py \
+  "reports/eval_runs/<reference-run-id>.json" \
+  "reports/eval_runs/<candidate-run-id>.json"
+```
+
+Do not mix these reports with direct-safety or security-comparison outputs, whose metrics describe different workflows. Preserve the timestamped inputs rather than relying on the mutable `latest.json` described under [Run Selected Incident Cases](#run-selected-incident-cases).
+
+Numeric deltas are **run B minus run A**, rounded to six decimal places. Positive accuracy, coverage, or recall deltas generally indicate better quality; positive violations, latency, or cost deltas indicate worse outcomes or greater resource use. A case-count change is a comparability warning, not an improvement.
+
+A metric present on only one side is compared against **zero** on the missing side. Such a delta is not a measured improvement or regression. Before interpreting the table, inspect both reports' `case_ids` and `eval_set`, and control differences in model, prompt version, `used_openai`, and orchestration mode. The command displays those metadata fields except `case_ids`; it does not check that the runs are comparable.
+
+The displayed `thresholds_passed` values are saved results, not newly evaluated gates. The comparator only prints tables: it does not run agents, write reports, recalculate thresholds, or enforce a regression gate. A successful comparison command does not mean the candidate passed.
+
 ## OpenAI Snapshot
 
 `docs/eval_snapshot.md` records one checked-in OpenAI-backed eval snapshot. It is a documented example run, not a live benchmark service and not a claim of production readiness. Do not change those numbers unless they are directly supported by a new checked-in snapshot.
