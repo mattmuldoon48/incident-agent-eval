@@ -41,6 +41,27 @@ flowchart TD
 7. Persist an `AgentTrace` with tool calls, arguments, summaries, prompt hash, safety status, latency, and estimated cost.
 8. During evals, score each trace against expected severity, tools, likely causes, evidence, recommendations, and forbidden actions.
 
+### Runbook retrieval and evidence limits
+
+The original incident-triage harness searches direct-child `*.md` files in `data/runbooks/`; nested directories are not searched. Its query combines the incident summary and symptoms. This local retrieval path is separate from the security policy simulation.
+
+`runbooks.py` replaces query hyphens with spaces, lowercases whitespace-separated terms, and drops terms of two characters or fewer. It scores each file by case-insensitive substring occurrence counts, not semantic similarity or whole-word matching. Zero-score files are omitted; the tool returns up to three matches in descending score order, with filename order breaking ties.
+
+Matching examines the whole file, but each returned `snippet` is only the first 700 characters with surrounding whitespace stripped. A match late in a long runbook can therefore rank the file without appearing in its snippet. The deterministic report cites only the first returned runbook and at most 220 characters of that snippet. Put concise incident-identifying context near the beginning and inspect the returned evidence rather than assuming a successful search quotes the matching passage.
+
+Preview retrieval from the repository root without an API key, model call, or generated trace:
+
+```bash
+python - <<'PY'
+from pathlib import Path
+from incident_agent_eval.runbooks import search_markdown_runbooks
+
+for hit in search_markdown_runbooks(Path("data/runbooks"), "5xx latency"):
+    print(f"{hit['source']} (score={hit['score']})")
+    print(hit["snippet"])
+PY
+```
+
 ## Module Responsibilities
 
 | Module | Responsibility |

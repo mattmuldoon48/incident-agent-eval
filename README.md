@@ -214,6 +214,8 @@ The repository also retains the original bounded incident-triage harness:
 - direct final-report safety checks;
 - optional LangGraph orchestration.
 
+See [runbook retrieval and evidence limits](docs/architecture.md#runbook-retrieval-and-evidence-limits) when adding runbooks or investigating apparently irrelevant evidence in the original harness.
+
 Those existing commands remain available:
 
 ```bash
