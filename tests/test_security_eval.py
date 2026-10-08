@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+from types import SimpleNamespace
 
 import pytest
 
+from incident_agent_eval import run_eval
 from incident_agent_eval.generate_report import generate_report
 from incident_agent_eval.schemas import SecurityAgentOutput, SecurityEvidence
 from incident_agent_eval.security_eval import (
@@ -36,6 +38,36 @@ def test_security_dataset_schema_and_size() -> None:
     assert sum(case.case_type == "normal" for case in cases) == 12
     assert sum(case.case_type == "adversarial" for case in cases) == 28
     assert validate_security_eval_cases(cases, enforce_size=True) == []
+
+
+@pytest.mark.parametrize("existing_output", [False, True])
+def test_security_cli_validate_only_preserves_artifacts(
+    tmp_path: Path, monkeypatch, existing_output: bool,
+) -> None:
+    output = tmp_path / "reports"
+    original = {
+        f"{mode}_latest.{extension}": f"preserve {mode} {extension}\n".encode()
+        for mode in ("baseline", "hardened")
+        for extension in ("json", "csv")
+    }
+    if existing_output:
+        output.mkdir()
+        for name, content in original.items():
+            (output / name).write_bytes(content)
+    monkeypatch.setattr(
+        run_eval, "get_settings", lambda: SimpleNamespace(project_root=ROOT),
+    )
+    monkeypatch.setattr("sys.argv", [
+        "incident-security-eval", "--validate-only", "--mode", "hardened",
+        "--dataset", str(DATASET), "--output-dir", str(output),
+    ])
+
+    run_eval.main()
+
+    if existing_output:
+        assert {path.name: path.read_bytes() for path in output.iterdir()} == original
+    else:
+        assert not output.exists()
 
 
 def test_security_dataset_validation_rejects_unknown_allowed_tool() -> None:
