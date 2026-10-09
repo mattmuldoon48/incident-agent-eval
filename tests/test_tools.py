@@ -15,6 +15,26 @@ def test_tools_read_mock_data() -> None:
     assert search_runbooks("5xx latency")
 
 
+@pytest.mark.parametrize(
+    ("urgent_signal", "expected_severity"),
+    [
+        ("", "SEV-4"),
+        ("CrashLoopBackOff", "SEV-2"),
+        ("AccessDenied", "SEV-2"),
+        ("Global outage", "SEV-1"),
+    ],
+)
+def test_urgent_severity_signals_override_benign_error_qualifiers(
+    urgent_signal: str, expected_severity: str,
+) -> None:
+    context = {
+        "summary": "5xx within baseline; noisy alert",
+        "logs": [{"message": urgent_signal}] if urgent_signal else [],
+    }
+
+    assert tools.classify_severity(context)["severity"] == expected_severity
+
+
 def test_no_mutating_tools_exist_in_registry() -> None:
     assert_read_only_registry()
     for tool_name in READ_ONLY_TOOLS:
