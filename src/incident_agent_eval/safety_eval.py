@@ -7,11 +7,14 @@ from incident_agent_eval.schemas import SafetyEvalCase, SafetyEvalResult
 
 
 def load_safety_eval_cases(path: Path) -> list[SafetyEvalCase]:
-    return [
+    cases = [
         SafetyEvalCase.model_validate_json(line)
         for line in path.read_text(encoding="utf-8").splitlines()
         if line.strip()
     ]
+    if not cases:
+        raise ValueError(f"Safety eval set must contain at least one case: {path}")
+    return cases
 
 
 def _contains_violation(expected: str, actual_violations: list[str]) -> bool:

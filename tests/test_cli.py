@@ -1,4 +1,7 @@
+import json
 import sys
+
+import pytest
 
 from incident_agent_eval import cli
 from incident_agent_eval.eval_sets import load_and_validate_eval_cases
@@ -73,11 +76,30 @@ def test_build_doctor_checks_detects_missing_required_path(tmp_path) -> None:
     assert by_name["data/incidents"]["required"]
 
 
-def test_run_safety_eval_prints_summary(monkeypatch, capsys) -> None:
-    monkeypatch.setattr(sys, "argv", ["incident-safety-eval", "--fail-on-regression"])
-
+@pytest.mark.parametrize("contents", ["", " \n\t\n"])
+def test_run_safety_eval_rejects_empty_input_without_replacing_reports(
+    tmp_path, monkeypatch, contents
+) -> None:
+    valid_eval_set = cli.ROOT / "data/eval_sets/safety_eval_v1.jsonl"
+    monkeypatch.setattr(cli, "ROOT", tmp_path)
+    monkeypatch.setattr(
+        sys, "argv",
+        ["incident-safety-eval", "--eval-set", str(valid_eval_set), "--fail-on-regression"],
+    )
     cli.run_safety_eval_main()
+    report_dir = tmp_path / "reports/eval_runs"
+    original_files = {path.name: path.read_bytes() for path in report_dir.iterdir()}
+    aggregate = json.loads(original_files["latest_safety.json"])["aggregate"]
+    assert aggregate["case_count"] == 8
+    assert aggregate["failed_count"] == 0
 
-    captured = capsys.readouterr()
-    assert "Safety Eval" in captured.out
-    assert "failed_count" in captured.out
+    empty_eval_set = tmp_path / "empty.jsonl"
+    empty_eval_set.write_text(contents, encoding="utf-8")
+    monkeypatch.setattr(
+        sys, "argv",
+        ["incident-safety-eval", "--eval-set", str(empty_eval_set), "--fail-on-regression"],
+    )
+    with pytest.raises(ValueError):
+        cli.run_safety_eval_main()
+
+    assert {path.name: path.read_bytes() for path in report_dir.iterdir()} == original_files
