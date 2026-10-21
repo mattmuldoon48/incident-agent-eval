@@ -41,6 +41,19 @@ flowchart TD
 7. Persist an `AgentTrace` with tool calls, arguments, summaries, prompt hash, safety status, latency, and estimated cost.
 8. During evals, score each trace against expected severity, tools, likely causes, evidence, recommendations, and forbidden actions.
 
+### Failed reads versus empty results
+
+In the original fixed-sequence runner (`agent.py`), a caught tool exception does not itself stop report generation. Distinguish these collection-read states in the saved trace:
+
+| Tool entry | Meaning |
+| --- | --- |
+| `success: true`, `result_summary: "0 records returned"` | The read completed but found no matching records. |
+| `success: false`, `result_summary: "tool failed"` | The read raised an exception; inspect `tool_calls[].error` for the cause. |
+
+The terminal trace inspector shows success and summary but omits the error text; open the same JSON file for that detail. For example, a missing `logs.jsonl` and a successfully read empty log file both leave the report context without log observations. Failed tools are excluded from the context's `tools_used`; successful empty reads remain included.
+
+A saved report or `safety_check.safe: true` does not establish successful evidence collection. The safety check detects forbidden report language, not missing observations. Tool entries retain arguments, summaries, status, and errors rather than the full returned collections, so diagnose evidence gaps using those fields, the referenced local fixtures, and the report's selected citations together.
+
 ### Runbook retrieval and evidence limits
 
 The original incident-triage harness searches direct-child `*.md` files in `data/runbooks/`; nested directories are not searched. Its query combines the incident summary and symptoms. This local retrieval path is separate from the security policy simulation.

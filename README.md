@@ -241,6 +241,8 @@ python -m json.tool "/absolute/path/to/saved_trace.json"
 
 For an original incident-eval run, its JSON report pairs `case_ids` with `trace_paths` in the same order. Choose the matching trace path rather than relying on `--latest`.
 
+See [failed reads versus empty results](docs/architecture.md#failed-reads-versus-empty-results) to distinguish missing evidence from tool failures; a saved report and a passing safety check do not establish that collection succeeded.
+
 The optional OpenAI path uses `OPENAI_API_KEY`; if it is absent, the original agent uses its local deterministic fallback. The new security comparison never requires the key.
 
 ## Tests and Quality
