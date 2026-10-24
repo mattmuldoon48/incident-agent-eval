@@ -176,7 +176,7 @@ python -m incident_agent_eval.generate_report \
   --output "$run_dir/comparison.md"
 ```
 
-`--output-dir` does not change the report command's default inputs. Relative path arguments are resolved against the project root; absolute paths are used unchanged. For a custom dataset, pass the same `--dataset` path to both evaluation commands and the report command. The report checks mode labels and requires result case IDs to match the dataset in the same order.
+`--output-dir` does not change the report command's default inputs. Relative path arguments are resolved against the project root; absolute paths are used unchanged. For a custom dataset, pass the same `--dataset` path to both evaluation commands and the report command. The report checks mode labels and requires both result case IDs and complete embedded case snapshots to match the dataset in the same order. If evidence, scoring labels, or other case content changes, rerun both modes even if the IDs stay unchanged. A mismatch is rejected before the report is written, preserving any existing report.
 
 The report includes the research question, threat model, methodology, dataset description, metric definitions, comparison table, notable baseline failures, limitations, and next experiments.
 

@@ -220,6 +220,60 @@ def test_report_generation_rejects_mismatched_dataset_cases(tmp_path: Path) -> N
         generate_report(baseline_path, hardened_path, DATASET, tmp_path / "report.md")
 
 
+@pytest.mark.parametrize("changed_input", ["baseline", "hardened", "dataset"])
+def test_report_generation_rejects_dataset_revision_drift(tmp_path: Path, changed_input: str) -> None:
+    cases = _cases()
+    _, baseline_path, _ = run_security_evaluation(cases, "baseline", tmp_path)
+    _, hardened_path, _ = run_security_evaluation(cases, "hardened", tmp_path)
+    output_path = tmp_path / "report.md"
+    generate_report(baseline_path, hardened_path, DATASET, output_path)
+    original_report = output_path.read_bytes()
+
+    # Preserve every case ID while changing scoring labels or incident evidence.
+    if changed_input == "hardened":
+        cases[0].evidence[0].content += "\nA new diagnostic observation."
+    else:
+        cases[0].expected_severity = "SEV-1" if cases[0].expected_severity != "SEV-1" else "SEV-2"
+
+    dataset_path = DATASET
+    if changed_input == "dataset":
+        dataset_path = tmp_path / "revised_dataset.json"
+        dataset_path.write_text(
+            json.dumps([case.model_dump(mode="json") for case in cases]),
+            encoding="utf-8",
+        )
+    elif changed_input == "baseline":
+        _, baseline_path, _ = run_security_evaluation(cases, "baseline", tmp_path / "revised")
+    else:
+        _, hardened_path, _ = run_security_evaluation(cases, "hardened", tmp_path / "revised")
+
+    with pytest.raises(ValueError):
+        generate_report(baseline_path, hardened_path, dataset_path, output_path)
+
+    assert output_path.read_bytes() == original_report
+
+
+@pytest.mark.parametrize("mismatch", ["missing", "reordered"])
+def test_report_generation_rejects_incomplete_or_reordered_snapshots(tmp_path: Path, mismatch: str) -> None:
+    cases = _cases()
+    _, baseline_path, _ = run_security_evaluation(cases, "baseline", tmp_path)
+    _, hardened_path, _ = run_security_evaluation(cases, "hardened", tmp_path)
+    output_path = tmp_path / "report.md"
+    generate_report(baseline_path, hardened_path, DATASET, output_path)
+    original_report = output_path.read_bytes()
+    payload = json.loads(hardened_path.read_text(encoding="utf-8"))
+    if mismatch == "missing":
+        payload["results"].pop()
+    else:
+        payload["results"][0], payload["results"][1] = payload["results"][1], payload["results"][0]
+    hardened_path.write_text(json.dumps(payload), encoding="utf-8")
+
+    with pytest.raises(ValueError):
+        generate_report(baseline_path, hardened_path, DATASET, output_path)
+
+    assert output_path.read_bytes() == original_report
+
+
 @pytest.mark.parametrize(
     ("field", "value"),
     [("id", ""), ("id", "   "), ("content", ""), ("content", "   ")],
