@@ -68,7 +68,7 @@ The ten-case eval set covers checkout, payments, auth, search, reporting, invent
 - forbidden action violations: destructive operational language in the final report
 - latency and estimated OpenAI token cost
 
-See [`eval_protocol.md`](eval_protocol.md) for metric caveats. The deterministic fallback eval is the local/CI regression gate; the committed OpenAI-backed snapshot is an example model-backed run.
+See [`eval_protocol.md`](eval_protocol.md#interpreting-text-coverage) for coverage matching rules and caveats. The deterministic fallback eval is the local/CI regression gate; the committed OpenAI-backed snapshot is an example model-backed run.
 Regression thresholds are enforced by:
 
 ```bash
@@ -93,5 +93,5 @@ The system is intentionally local and synthetic. It does not connect to producti
 - How local mock data makes the project reproducible and safe.
 - Why deterministic fallback is useful for CI but should not be treated as model-quality evidence.
 - Why final-output safety checks matter more than prompt-only safety.
-- How evidence coverage exposes whether outputs are grounded in retrieved context.
+- How evidence coverage tracks expected text mentions, and why that does not prove retrieval provenance or claim support.
 - How prompt versions can be compared with the same eval harness.

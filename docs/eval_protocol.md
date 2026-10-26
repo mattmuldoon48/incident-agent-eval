@@ -63,6 +63,16 @@ For each eval case, the runner produces one `EvalResult`.
 
 Aggregate metrics are simple averages or totals across the selected cases.
 
+### Interpreting text coverage
+
+Likely-cause, recommendation, and evidence coverage measure text matches, not agreement with an expected conclusion. For each metric, the scorer joins all corresponding report entries before matching; evidence includes each entry's source, quote/summary, and relevance text.
+
+An expected phrase matches if it appears as a case-insensitive substring. Otherwise, the scorer compares distinct normalized tokens: punctuation becomes spaces, common stopwords and tokens of two characters or fewer are removed, and the small `TOKEN_ALIASES` map in `evaluators.py` is applied (for example, `deployed` becomes `deploy`). At least **60% of the expected tokens** must occur in the combined report text. Token order and repetition do not matter, and matching tokens can span separate list items. An expectation with no remaining tokens also counts as matched; avoid short-token-only or stopword-only expectations such as `DB`.
+
+Coverage is the fraction of expected phrases that match, rounded to three decimal places—not the fraction of matching tokens. Three matching tokens out of five give that phrase full credit. Negation is not understood: expected `database timeout` matches `No database timeout was observed.`
+
+In particular, evidence coverage does not check that text came from a successful tool read or that it supports the report's claims. The `matched_*` fields list matched expectations, not verified supporting passages. Review the trace and final evidence separately before making grounding claims; high coverage alone does not establish correctness or provenance.
+
 ## Thresholds
 
 The default regression thresholds are defined in `src/incident_agent_eval/evaluators.py` and are used by `python scripts/run_eval.py --fail-on-regression` and `make eval-strict`.
