@@ -14,6 +14,14 @@ make agent INCIDENT=data/incidents/incident_001.json
 make trace
 ```
 
+The `agent`, `trace`, and `compare` Make targets preserve spaces in file paths. Quote each assignment value when invoking Make from a shell; replace these example paths with your own files:
+
+```bash
+make agent INCIDENT="/path with spaces/incident.json"
+make trace TRACE="/path with spaces/saved_trace.json"
+make compare RUN_A="/path with spaces/baseline.json" RUN_B="/path with spaces/candidate.json"
+```
+
 Then, with `OPENAI_API_KEY` set in `.env`, run:
 
 ```bash

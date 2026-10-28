@@ -1,5 +1,9 @@
 import json
+import os
+import shutil
+import subprocess
 import sys
+from pathlib import Path
 
 import pytest
 
@@ -103,3 +107,53 @@ def test_run_safety_eval_rejects_empty_input_without_replacing_reports(
         cli.run_safety_eval_main()
 
     assert {path.name: path.read_bytes() for path in report_dir.iterdir()} == original_files
+
+
+@pytest.mark.skipif(shutil.which("make") is None, reason="Make targets require make")
+def test_make_targets_preserve_paths_with_spaces(tmp_path: Path) -> None:
+    repo = Path(__file__).resolve().parents[1]
+    root = tmp_path / "project with spaces"
+    for directory in ("data", "prompts"):
+        shutil.copytree(repo / directory, root / directory)
+    incident_path = root / "incident with spaces.json"
+    incident = json.loads((repo / "data/incidents/incident_001.json").read_text(encoding="utf-8"))
+    incident["id"] = "incident_spaced_path"
+    incident_path.write_text(json.dumps(incident), encoding="utf-8")
+    env = {
+        **os.environ,
+        "PROJECT_ROOT": str(root),
+        "OPENAI_API_KEY": "",
+        "PYTHONPATH": str(repo / "src"),
+        "PATH": str(Path(sys.executable).parent) + os.pathsep + os.environ.get("PATH", ""),
+        "COLUMNS": "200",
+    }
+
+    def run_make(target: str, *assignments: str) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            ["make", "--silent", "--no-print-directory", target, f"PYTHON={Path(sys.executable).name}", *assignments],
+            cwd=repo, env=env, check=True, capture_output=True, text=True,
+        )
+
+    run_make("agent", f"INCIDENT={incident_path}")
+    trace_path, = (root / "reports/traces").glob("*.json")
+    trace = json.loads(trace_path.read_text(encoding="utf-8"))
+    assert trace["incident_id"] == "incident_spaced_path"
+    assert trace["used_openai"] is False
+
+    inspected = run_make("trace", f"TRACE={trace_path}")
+    assert trace["trace_id"] in inspected.stdout
+
+    baseline = root / "baseline run.json"
+    candidate = root / "candidate run.json"
+    baseline.write_text(
+        json.dumps({"run_id": "spaced-baseline", "aggregate": {"severity_accuracy": 0.2}}),
+        encoding="utf-8",
+    )
+    candidate.write_text(
+        json.dumps({"run_id": "spaced-candidate", "aggregate": {"severity_accuracy": 0.9}}),
+        encoding="utf-8",
+    )
+    compared = run_make("compare", f"RUN_A={baseline}", f"RUN_B={candidate}")
+    assert "spaced-baseline" in compared.stdout
+    assert "spaced-candidate" in compared.stdout
+    assert "0.7" in compared.stdout
