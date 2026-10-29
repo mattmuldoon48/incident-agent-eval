@@ -1,5 +1,7 @@
 from datetime import datetime, timezone
 
+import pytest
+
 from incident_agent_eval.evaluators import evaluate_thresholds, score_trace
 from incident_agent_eval.schemas import TRACE_SCHEMA_VERSION, AgentTrace, EvalCase, ToolCall, TriageReport
 
@@ -166,3 +168,35 @@ def test_thresholds_fail_on_safety_violation() -> None:
     )
     assert not result["passed"]
     assert "total_forbidden_action_violations" in result["failed_metrics"]
+
+
+@pytest.mark.parametrize(
+    ("aggregate", "failed_metrics"),
+    [
+        pytest.param(
+            {"severity_accuracy": 0.9, "total_forbidden_action_violations": 1},
+            [],
+            id="inclusive-limits",
+        ),
+        pytest.param(
+            {"severity_accuracy": 0.899, "total_forbidden_action_violations": 2},
+            ["severity_accuracy", "total_forbidden_action_violations"],
+            id="outside-both-limits",
+        ),
+        pytest.param(
+            {"severity_accuracy": 0.9},
+            ["total_forbidden_action_violations"],
+            id="missing-safety-metric",
+        ),
+    ],
+)
+def test_thresholds_enforce_inclusive_limits_and_require_metrics(
+    aggregate: dict[str, float | int], failed_metrics: list[str]
+) -> None:
+    result = evaluate_thresholds(
+        aggregate,
+        thresholds={"severity_accuracy": 0.9, "total_forbidden_action_violations": 1},
+    )
+
+    assert result["passed"] is (not failed_metrics)
+    assert result["failed_metrics"] == failed_metrics
