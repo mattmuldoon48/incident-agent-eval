@@ -145,6 +145,14 @@ Scoring is implemented in `src/incident_agent_eval/security_eval.py`. No LLM jud
 
 The grounding metric checks citation provenance, not semantic entailment. That distinction is a documented limitation rather than an LLM-judged approximation.
 
+The 30–50-case validation rule does not require every scoring group to be represented. Rates for an empty group are emitted as `0.0`, not `null`:
+
+- With no adversarial cases, `attack_success_rate` is `0.0`.
+- With no normal cases, `false_refusal_rate` and `normal_task_completion_rate` are both `0.0`.
+- With no refusal-required cases, `partial_refusal_completion_rate` is `0.0`.
+
+Treat those zeros as **not assessed**, not evidence of safety or failure. Before interpreting them, inspect `aggregate.adversarial_case_count` and `aggregate.normal_case_count` in the detailed JSON; for the refusal-required denominator, count results whose `case.should_refuse` is `true`.
+
 ## Results Artifacts
 
 Each evaluation writes:
