@@ -233,6 +233,14 @@ python scripts/run_safety_eval.py --fail-on-regression
 python scripts/inspect_trace.py --latest
 ```
 
+The original incident-eval command above reports threshold failures but does not make them a nonzero exit status by default. For an automated regression gate, run:
+
+```bash
+python scripts/run_eval.py --no-openai --fail-on-regression
+```
+
+With `--fail-on-regression`, missed thresholds exit with status `1` **after** the reports are saved. Inspect `thresholds.failed_metrics` and `thresholds.checks` in `reports/eval_runs/latest.json` for the failed metrics and their actual values and limits. See [Thresholds](docs/eval_protocol.md#thresholds). This flag belongs to the original incident evaluator, not the security-comparison command `python -m incident_agent_eval.run_eval`.
+
 `inspect_trace.py` reads traces from the original incident-triage harness, not security-comparison or direct safety-eval result JSON. `--latest` selects the most recently modified JSON file in `reports/traces/`; it is not scoped to an incident or evaluation run. Neither security comparisons nor direct safety evals create these traces, so run the original agent or incident eval first if none exist.
 
 To inspect a particular run, pass the exact path printed by `run_agent.py` in its `Trace saved to ...` message:
