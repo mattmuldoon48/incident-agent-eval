@@ -220,7 +220,7 @@ The repository also retains the original bounded incident-triage harness:
 - optional OpenAI structured report generation;
 - deterministic fallback behavior;
 - direct final-report safety checks;
-- optional LangGraph orchestration.
+- optional [LangGraph orchestration](docs/langgraph_mode.md#run-the-langgraph-eval).
 
 See [runbook retrieval and evidence limits](docs/architecture.md#runbook-retrieval-and-evidence-limits) when adding runbooks or investigating apparently irrelevant evidence in the original harness.
 

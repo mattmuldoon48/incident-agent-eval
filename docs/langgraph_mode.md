@@ -75,6 +75,14 @@ Use this command for an offline deterministic eval run:
 python scripts/run_langgraph_eval.py --no-openai
 ```
 
+Each completed LangGraph evaluation writes `reports/eval_runs/langgraph_<timestamp>.json`, `.csv`, and `.md`, and replaces `latest_langgraph.json`, `latest_langgraph.csv`, and `latest_langgraph.md` in that directory. It does not update the original evaluator's `latest.json`, `latest.csv`, or `latest.md`. A filtered `--case-id` run also replaces the LangGraph latest files; retain the timestamped files when preserving a full-suite result.
+
+To inspect the latest LangGraph JSON report from the repository root:
+
+```bash
+python -m json.tool reports/eval_runs/latest_langgraph.json
+```
+
 ## Remaining Limitations
 
 - All incidents, logs, metrics, deploys, owners, and runbooks are synthetic local files.
