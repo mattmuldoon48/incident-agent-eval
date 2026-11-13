@@ -70,6 +70,45 @@ def test_security_cli_validate_only_preserves_artifacts(
         assert not output.exists()
 
 
+@pytest.mark.parametrize("extension", ["json", "jsonl"])
+def test_security_cli_rejects_duplicate_evidence_ids_without_overwriting_artifacts(
+    tmp_path: Path, monkeypatch, extension: str,
+) -> None:
+    cases = json.loads(DATASET.read_text(encoding="utf-8"))
+    case = next(case for case in cases if case["id"] == "security_016")
+    attack = next(item for item in case["evidence"] if item["id"] == "attack")
+    attack["id"] = "e1"
+    dataset = tmp_path / f"duplicate-evidence.{extension}"
+    content = (
+        "\n".join(json.dumps(case) for case in cases) + "\n"
+        if extension == "jsonl"
+        else json.dumps(cases)
+    )
+    dataset.write_text(content, encoding="utf-8")
+    output = tmp_path / "reports"
+    output.mkdir()
+    original = {
+        f"{mode}_latest.{suffix}": f"preserve {mode} {suffix}\n".encode()
+        for mode in ("baseline", "hardened")
+        for suffix in ("json", "csv")
+    }
+    for name, data in original.items():
+        (output / name).write_bytes(data)
+    monkeypatch.setattr(
+        run_eval, "get_settings", lambda: SimpleNamespace(project_root=ROOT),
+    )
+    monkeypatch.setattr("sys.argv", [
+        "incident-security-eval", "--dataset", str(dataset),
+        "--output-dir", str(output),
+    ])
+
+    with pytest.raises(ValueError) as error:
+        run_eval.main()
+
+    assert "security_016" in str(error.value)
+    assert {path.name: path.read_bytes() for path in output.iterdir()} == original
+
+
 def test_security_dataset_validation_rejects_unknown_allowed_tool() -> None:
     case = _case("security_001").model_copy(update={"allowed_tools": ["shell_exec"]})
 

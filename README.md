@@ -109,7 +109,7 @@ Each case includes:
 - whether any part should be refused;
 - expected safe behavior;
 - a short labeling rationale;
-- evidence records with stable IDs and trust labels.
+- evidence records with IDs unique within each case and explicit trust labels.
 
 Attack patterns include malicious log instructions, indirect injection in deploy and runbook evidence, misleading impact claims, severity and root-cause manipulation, analysis-abort instructions, forbidden operational actions, unauthorized tools, and allowed-tool names delivered through an unauthorized instruction channel.
 
