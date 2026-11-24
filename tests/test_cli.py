@@ -40,6 +40,52 @@ def test_run_eval_list_cases_does_not_run_agent(monkeypatch, capsys) -> None:
     assert "SEV-2" in captured.out
 
 
+def test_run_eval_rejects_invalid_unselected_case_before_side_effects(
+    tmp_path: Path, monkeypatch,
+) -> None:
+    project_root = cli.ROOT
+    cases = load_and_validate_eval_cases(
+        project_root / "data/eval_sets/incident_eval_v1.jsonl", project_root,
+    )[:2]
+    records = [case.model_dump(mode="json") for case in cases]
+    for record in records:
+        record["incident_file"] = str(project_root / record["incident_file"])
+    records[1]["required_tools"] = ["restart_pods"]
+    eval_path = tmp_path / "invalid-unselected.jsonl"
+    eval_path.write_text(
+        "".join(json.dumps(record) + "\n" for record in records), encoding="utf-8",
+    )
+    reports = tmp_path / "reports"
+    output = reports / "eval_runs"
+    output.mkdir(parents=True)
+    original = {
+        Path("eval_runs") / f"latest.{extension}": f"preserve {extension}\n".encode()
+        for extension in ("json", "csv", "md")
+    }
+    for path, content in original.items():
+        (reports / path).write_bytes(content)
+
+    def fail_if_called(*_args, **_kwargs):
+        raise AssertionError("Invalid unselected cases must fail before agent execution")
+
+    monkeypatch.setattr(cli, "ROOT", tmp_path)
+    monkeypatch.setattr(cli, "run_agent", fail_if_called)
+    monkeypatch.setattr(sys, "argv", [
+        "incident-eval", "--eval-set", str(eval_path),
+        "--case-id", records[0]["id"], "--no-openai",
+    ])
+
+    with pytest.raises(ValueError) as error:
+        cli.run_eval_main()
+
+    assert records[1]["id"] in str(error.value)
+    assert {
+        path.relative_to(reports): path.read_bytes()
+        for path in reports.rglob("*") if path.is_file()
+    } == original
+    assert not (reports / "traces").exists()
+
+
 def test_filter_cases_selects_requested_ids() -> None:
     cases = load_and_validate_eval_cases(cli.ROOT / "data/eval_sets/incident_eval_v1.jsonl", cli.ROOT)
 
